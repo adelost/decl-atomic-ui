@@ -10,7 +10,7 @@ TypeScript interfaces provide full IDE support: autocomplete, error marking, ref
 
 ## Core Pattern: Attribute Triggers Behavior
 
-This pattern permeates the entire system — both UI and business logic.
+This pattern permeates the entire system:both UI and business logic.
 
 ### The Principle
 
@@ -57,12 +57,12 @@ for (const [key, behavior] of Object.entries(behaviors)) {
 
 ## Principles
 
-1. **Pages = data** — a page file is just a typed object, no logic
-2. **Atomic Design** — atoms, molecules, organisms. Nothing else exists.
-3. **No specialized code** — if a component isn't reusable, it's not an atom
+1. **Pages = data**:a page file is just a typed object, no logic
+2. **Atomic Design**:atoms, molecules, organisms. Nothing else exists.
+3. **No specialized code**:if a component isn't reusable, it's not an atom
 4. **New page = new object, zero new code** (if existing building blocks suffice)
-5. **Callbacks = real function references** — IDE can navigate directly to them
-6. **No magic strings for binding** — use stores/signals, not `bind: 'user.name'`
+5. **Callbacks = real function references**:IDE can navigate directly to them
+6. **No magic strings for binding**:use stores/signals, not `bind: 'user.name'`
 
 ---
 
@@ -109,7 +109,7 @@ src/
 
 ## CSS Strategy
 
-The pattern is **CSS-agnostic** — each atom handles its own styling.
+The pattern is **CSS-agnostic**:each atom handles its own styling.
 
 ### Recommended: shadcn-svelte
 
@@ -121,10 +121,10 @@ Melt UI (primitives) → Bits UI (headless) → shadcn-svelte (styled)
 - Pre-built, accessible components with great defaults
 - Copy-paste code you own (not a npm dependency)
 - Uses Tailwind + Bits UI under the hood
-- Easy to customize — it's just Tailwind classes
+- Easy to customize:it's just Tailwind classes
 - Theming built-in via CSS variables
 
-> **Note:** shadcn-svelte requires Tailwind CSS. This isn't a separate choice — when you choose shadcn, you choose Tailwind.
+> **Note:** shadcn-svelte requires Tailwind CSS. This isn't a separate choice:when you choose shadcn, you choose Tailwind.
 
 ```bash
 # Setup
@@ -201,7 +201,7 @@ Otherwise, a wrapper is just an extra layer without value.
 
 ### When to go deeper (raw Bits UI)
 
-Only if shadcn components don't fit your design at all. Then use Bits UI primitives directly. But this is rare — shadcn is customizable enough for most projects.
+Only if shadcn components don't fit your design at all. Then use Bits UI primitives directly. But this is rare:shadcn is customizable enough for most projects.
 
 ---
 
