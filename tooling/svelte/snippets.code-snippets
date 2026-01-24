@@ -1,0 +1,131 @@
+{
+  "Atom: Input": {
+    "prefix": "atom-input",
+    "body": [
+      "{",
+      "  atom: \"input\",",
+      "  id: \"${1:fieldId}\",",
+      "  label: \"${2:Label}\",",
+      "  value: () => ${3:store}.${1:fieldId},",
+      "  onChange: (v) => ${3:store}.${1:fieldId} = v",
+      "},"
+    ],
+    "description": "Input atom with value binding"
+  },
+  "Atom: Input (simple)": {
+    "prefix": "atom-input-simple",
+    "body": [
+      "{",
+      "  atom: \"input\",",
+      "  id: \"${1:fieldId}\",",
+      "  label: \"${2:Label}\"",
+      "},"
+    ],
+    "description": "Simple input atom without binding"
+  },
+  "Atom: Button": {
+    "prefix": "atom-button",
+    "body": [
+      "{",
+      "  atom: \"button\",",
+      "  text: \"${1:Button Text}\",",
+      "  variant: \"${2|primary,secondary,danger|}\",",
+      "  onClick: ${3:handler}",
+      "},"
+    ],
+    "description": "Button atom"
+  },
+  "Atom: Select": {
+    "prefix": "atom-select",
+    "body": [
+      "{",
+      "  atom: \"select\",",
+      "  id: \"${1:fieldId}\",",
+      "  label: \"${2:Label}\",",
+      "  options: ${3:optionsArray},",
+      "  value: () => ${4:store}.${1:fieldId},",
+      "  onChange: (v) => ${4:store}.${1:fieldId} = v",
+      "},"
+    ],
+    "description": "Select atom with options"
+  },
+  "Atom: Checkbox": {
+    "prefix": "atom-checkbox",
+    "body": [
+      "{",
+      "  atom: \"checkbox\",",
+      "  id: \"${1:fieldId}\",",
+      "  label: \"${2:Label}\",",
+      "  checked: () => ${3:store}.${1:fieldId},",
+      "  onChange: (v) => ${3:store}.${1:fieldId} = v",
+      "},"
+    ],
+    "description": "Checkbox atom"
+  },
+  "Molecule: Form": {
+    "prefix": "mol-form",
+    "body": [
+      "{",
+      "  molecule: \"form\",",
+      "  onSubmit: ${1:handleSubmit},",
+      "  fields: [",
+      "    $0",
+      "  ]",
+      "},"
+    ],
+    "description": "Form molecule"
+  },
+  "Molecule: Actions": {
+    "prefix": "mol-actions",
+    "body": [
+      "{",
+      "  molecule: \"actions\",",
+      "  buttons: [",
+      "    { atom: \"button\", text: \"${1:Save}\", variant: \"primary\", onClick: ${2:handleSave} },",
+      "    { atom: \"button\", text: \"${3:Cancel}\", variant: \"secondary\", onClick: ${4:handleCancel} }",
+      "  ]",
+      "},"
+    ],
+    "description": "Actions molecule with buttons"
+  },
+  "Organism: Table": {
+    "prefix": "org-table",
+    "body": [
+      "{",
+      "  organism: \"table\",",
+      "  data: () => ${1:dataSource},",
+      "  columns: [",
+      "    { field: \"${2:id}\", header: \"${3:ID}\" },",
+      "    { field: \"${4:name}\", header: \"${5:Name}\" }",
+      "  ],",
+      "  onRowClick: ${6:handleRowClick}",
+      "},"
+    ],
+    "description": "Table organism"
+  },
+  "Page: Basic": {
+    "prefix": "page-basic",
+    "body": [
+      "import type { Page } from \"../ui/types\";",
+      "",
+      "export const ${1:pageName}Page: Page = {",
+      "  title: \"${2:Page Title}\",",
+      "  layout: \"${3|default,centered,sidebar|}\",",
+      "  sections: [",
+      "    $0",
+      "  ]",
+      "};"
+    ],
+    "description": "Basic page structure"
+  },
+  "Visible condition": {
+    "prefix": "visible",
+    "body": "visible: () => ${1:condition},",
+    "description": "Conditional visibility"
+  },
+  "Validate function": {
+    "prefix": "validate",
+    "body": "validate: (v) => ${1:v.length > 0} || \"${2:Error message}\",",
+    "description": "Validation with error message"
+  }
+}
