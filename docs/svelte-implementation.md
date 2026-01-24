@@ -142,6 +142,46 @@ npx shadcn-svelte@latest add button input select
 <Button {variant} on:click={onClick}>{text}</Button>
 ```
 
+### Why shadcn over raw Bits UI?
+
+**shadcn-svelte (what you write):**
+```svelte
+<Select.Root>
+  <Select.Trigger class="w-[180px]">
+    <Select.Value placeholder="Select theme" />
+  </Select.Trigger>
+  <Select.Content>
+    <Select.Item value="light">Light</Select.Item>
+    <Select.Item value="dark">Dark</Select.Item>
+  </Select.Content>
+</Select.Root>
+```
+
+**Raw Bits UI (what you'd have to write):**
+```svelte
+<Select.Root>
+  <Select.Trigger class="inline-flex h-10 items-center justify-between
+    rounded-md border border-input bg-background px-3 py-2 text-sm
+    ring-offset-background placeholder:text-muted-foreground
+    focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2
+    disabled:cursor-not-allowed disabled:opacity-50 w-[180px]">
+    <Select.Value placeholder="Select theme" />
+  </Select.Trigger>
+  <Select.Content class="relative z-50 min-w-[8rem] overflow-hidden
+    rounded-md border bg-popover text-popover-foreground shadow-md
+    animate-in fade-in-80">
+    <Select.Item class="relative flex w-full cursor-default select-none
+      items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none
+      focus:bg-accent focus:text-accent-foreground
+      data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+      value="light">Light</Select.Item>
+    <!-- ...repeat for every item... -->
+  </Select.Content>
+</Select.Root>
+```
+
+**shadcn does this work for you.** All that CSS lives in the component file you own, not scattered across your codebase.
+
 ### Alternatives
 
 | Approach | When to use |
@@ -152,20 +192,7 @@ npx shadcn-svelte@latest add button input select
 
 ### When to go deeper (raw Bits UI)
 
-Only if shadcn components don't fit your design at all. Then use Bits UI primitives directly:
-
-```svelte
-<script>
-  import { Dialog } from "bits-ui";
-</script>
-
-<Dialog.Root>
-  <Dialog.Trigger>Open</Dialog.Trigger>
-  <Dialog.Content>
-    <!-- Your custom styling -->
-  </Dialog.Content>
-</Dialog.Root>
-```
+Only if shadcn components don't fit your design at all. Then use Bits UI primitives directly. But this is rare — shadcn is customizable enough for most projects.
 
 ---
 
