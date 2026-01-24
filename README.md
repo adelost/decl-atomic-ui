@@ -2,6 +2,8 @@
 
 A framework-agnostic pattern for building UIs where **pages are data, not code**.
 
+**[Live Demo](https://adelost.github.io/declarative-ui/)** · [Documentation](docs/svelte-implementation.md)
+
 ## Core Concept
 
 ```typescript
