@@ -20,12 +20,12 @@ const page: Page = {
 
 ## Principles
 
-1. **Pages = Data**:A page file is a typed object, no logic
-2. **Atomic Design**:Atoms, molecules, organisms. Nothing else.
-3. **No specialized code**:If a component isn't reusable, it's not an atom
-4. **New page = new object, zero new code** (if existing building blocks suffice)
-5. **Callbacks = real function references**:IDE can navigate directly
-6. **No magic strings for binding**:Use stores/signals, not `bind: 'user.name'`
+1. **Pages = data.** A page file is a typed object, no logic.
+2. **Atomic Design.** Atoms, molecules, organisms. Nothing else.
+3. **No specialized code.** If a component isn't reusable, it's not an atom.
+4. **New page = new object, zero new code** (if existing building blocks suffice).
+5. **Callbacks = real function references.** IDE can navigate directly.
+6. **No magic strings for binding.** Use stores/signals, not `bind: 'user.name'`.
 
 ## Design Pattern: Attribute Triggers Behavior
 
@@ -55,12 +55,12 @@ The concept is universal. Each implementation uses its own type system:
 
 ## Why This Works
 
-- **Autocomplete**:TypeScript interfaces → IDE suggests correct properties
-- **Error marking**:Typo in `atom: "inptu"` → red line immediately
-- **Refactoring**:Rename `InputAtom.label` → updates in all pages
-- **Go-to-definition**:Ctrl+click on `service.create` → jumps to service
-- **Copyable**:New page = copy object, change data
-- **Testable**:Page objects are pure data → easy to validate
+- **Autocomplete** - TypeScript interfaces → IDE suggests correct properties
+- **Error marking** - Typo in `atom: "inptu"` → red line immediately
+- **Refactoring** - Rename `InputAtom.label` → updates in all pages
+- **Go-to-definition** - Ctrl+click on `service.create` → jumps to service
+- **Copyable** - New page = copy object, change data
+- **Testable** - Page objects are pure data → easy to validate
 
 ## Structure
 

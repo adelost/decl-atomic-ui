@@ -57,12 +57,12 @@ for (const [key, behavior] of Object.entries(behaviors)) {
 
 ## Principles
 
-1. **Pages = data**:a page file is just a typed object, no logic
-2. **Atomic Design**:atoms, molecules, organisms. Nothing else exists.
-3. **No specialized code**:if a component isn't reusable, it's not an atom
-4. **New page = new object, zero new code** (if existing building blocks suffice)
-5. **Callbacks = real function references**:IDE can navigate directly to them
-6. **No magic strings for binding**:use stores/signals, not `bind: 'user.name'`
+1. **Pages = data.** A page file is just a typed object, no logic.
+2. **Atomic Design.** Atoms, molecules, organisms. Nothing else exists.
+3. **No specialized code.** If a component isn't reusable, it's not an atom.
+4. **New page = new object, zero new code** (if existing building blocks suffice).
+5. **Callbacks = real function references.** IDE can navigate directly to them.
+6. **No magic strings for binding.** Use stores/signals, not `bind: 'user.name'`.
 
 ---
 
