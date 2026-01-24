@@ -1023,3 +1023,9 @@ for (const [key, behavior] of Object.entries(behaviors)) {
 | Composition | Sections with atoms | Items with behaviors |
 
 **Golden rule:** Data describes WHAT, the engine handles HOW.
+
+---
+
+## Further Reading
+
+The "attribute triggers behavior" pattern was first explored in [CodeKata-GildedRose-Redesign](https://github.com/Adelost/CodeKata-GildedRose-Redesign) (2014), a refactoring kata that replaced deeply nested if/else logic with data-driven composition. The same principle now drives this UI system.
