@@ -778,6 +778,37 @@ data() is called
 
 ---
 
+## Internationalization (i18n)
+
+The data-driven approach makes i18n straightforward. Since we support `() => string` for all text properties, any translation library works.
+
+```typescript
+import { t } from './i18n'; // your translation function
+
+// Static translation (evaluated once)
+{
+  atom: "input",
+  label: t('form.name'),
+}
+
+// Reactive translation (updates on language change)
+{
+  atom: "button",
+  text: () => t('actions.save'),
+}
+```
+
+### Why this works
+
+| Approach | When to use |
+|----------|-------------|
+| `label: t('key')` | Static pages, SSR, simpler setup |
+| `label: () => t('key')` | SPA with runtime language switching |
+
+**No special i18n system needed.** Use whatever library you prefer (svelte-i18n, paraglide, custom). The pattern stays the same because all text properties accept either `string` or `() => string`.
+
+---
+
 ## Debugging
 
 Debugging belongs in the **renderer**, not in the page objects. Keep the data clean.
