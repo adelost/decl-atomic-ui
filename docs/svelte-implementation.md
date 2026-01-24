@@ -140,6 +140,76 @@ The pattern is **CSS-agnostic** — each atom handles its own styling. Recommend
 
 ---
 
+## Theming
+
+The pattern naturally supports theming because **pages are data, atoms are presentation**.
+
+```
+Pages (DATA) ──→ Atoms (STYLING) ──→ UI
+      ↑                ↑
+  Never changes    Swap here = new theme
+```
+
+### CSS Variables (simplest)
+
+```css
+/* styles/theme.css */
+:root {
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-bg: #ffffff;
+  --color-text: #1f2937;
+  --radius: 0.5rem;
+  --shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+[data-theme="dark"] {
+  --color-primary: #60a5fa;
+  --color-primary-hover: #93c5fd;
+  --color-bg: #1f2937;
+  --color-text: #f9fafb;
+}
+```
+
+### Use in atoms
+
+```svelte
+<!-- Button.svelte -->
+<button
+  class="px-4 py-2 rounded-[var(--radius)]
+         bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)]
+         text-white shadow-[var(--shadow)]"
+>
+  {text}
+</button>
+```
+
+### Switch theme at runtime
+
+```typescript
+// Switch to dark theme
+document.documentElement.dataset.theme = "dark";
+
+// Or with a store
+export const theme = $state<"light" | "dark">("light");
+$effect(() => {
+  document.documentElement.dataset.theme = theme;
+});
+```
+
+### Why this works
+
+| What | Changes? |
+|------|----------|
+| Page objects | No - pure data |
+| Atom interfaces | No - same props |
+| Atom styling | Yes - uses CSS variables |
+| CSS variables | Yes - swap colors/spacing |
+
+**Result:** New theme = new CSS file. Zero changes to pages or atom interfaces.
+
+---
+
 ## Atom vs Molecule vs Organism
 
 How do you know which level a component belongs to? Use this quick test:
