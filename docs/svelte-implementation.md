@@ -21,12 +21,12 @@ TypeScript interfaces provide full IDE support: autocomplete, error marking, ref
 
 ## Why Svelte
 
-| Problem in Angular implementation | Svelte solution |
-|-----------------------------------|-----------------|
-| jQuery workaround for form values | `bind:value` works out of the box |
-| `{{onChange()}}` every render cycle | `$derived` / `$effect` in Svelte 5 |
-| NgSwitch with 30 cases | `<svelte:component this={...}>` |
-| Large inline templates | Svelte components are naturally small |
+| Common legacy problems | Svelte solution |
+|------------------------|-----------------|
+| Manual DOM updates for form values | `bind:value` works out of the box |
+| Workarounds for reactivity | `$derived` / `$effect` in Svelte 5 |
+| Large switch statements for component types | `<svelte:component this={...}>` |
+| Verbose templates | Svelte components are naturally small |
 
 ---
 
@@ -755,20 +755,6 @@ Inspect `__PAGE__` in browser console to see the entire structure.
 | New combination (e.g., Stepper/Wizard) | New molecule + interface |
 | New API integration | New service |
 | New layout | New layout variant in PageRenderer |
-
----
-
-## Comparison with Angular DynamicItem
-
-| Aspect | Angular DynamicItem | This system |
-|--------|---------------------|-------------|
-| Type safety | One interface, 50+ optional props | Discriminated unions per atom |
-| IDE feedback | Limited (everything matches) | Full (only relevant props shown) |
-| Reactivity | `{{onChange()}}` hack | Svelte 5 runes |
-| Form values | jQuery workaround | `bind:value` |
-| Structure | Flat (everything = DynamicItem) | Hierarchical (atom/molecule/organism) |
-| Callbacks | Strings or inline | Real function references |
-| Extensibility | New case in switch | New component in map |
 
 ---
 
