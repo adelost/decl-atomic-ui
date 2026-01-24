@@ -1,36 +1,36 @@
-# Deklarativt UI-system med Svelte + TypeScript
+# Declarative UI System with Svelte + TypeScript
 
 ## Vision
 
-Alla sidor beskrivs som **TypeScript-objekt** (data), inte som templates eller logik. Vill du ha en ny sida? Kopiera ett objekt och byt ut datan. Allt bygger på **lego-bitar** (Atomic Design) som tvingas vara generiska.
+All pages are described as **TypeScript objects** (data), not as templates or logic. Want a new page? Copy an object and swap out the data. Everything builds on **building blocks** (Atomic Design) that are forced to be generic.
 
-TypeScript-interfaces ger full IDE-support: autocomplete, felmarkering, refaktorering, go-to-definition. Du skriver deklarativ data men med compile-time-säkerhet.
-
----
-
-## Principer
-
-1. **Sidor = data** - en sidfil är bara ett typat objekt, ingen logik
-2. **Atomic Design** - atoms, molecules, organisms. Inget annat existerar.
-3. **Ingen specialiserad kod** - om en komponent inte är återanvändbar, är den inte en atom
-4. **Ny sida = nytt objekt, noll ny kod** (om befintliga byggblock räcker)
-5. **Callbacks = riktiga funktionsreferenser** - IDE:n kan navigera direkt dit
-6. **Inga magiska strängar för binding** - använd stores/signals, inte `bind: 'user.name'`
+TypeScript interfaces provide full IDE support: autocomplete, error marking, refactoring, go-to-definition. You write declarative data with compile-time safety.
 
 ---
 
-## Varför Svelte
+## Principles
 
-| Problem i Angular-implementationen | Svelte-lösning |
-|-------------------------------------|----------------|
-| jQuery-workaround för formulärvärden | `bind:value` fungerar rakt av |
-| `{{onChange()}}` varje render-cycle | `$derived` / `$effect` i Svelte 5 |
-| NgSwitch med 30 cases | `<svelte:component this={...}>` |
-| Stora inline templates | Svelte-komponenter är naturligt små |
+1. **Pages = data** — a page file is just a typed object, no logic
+2. **Atomic Design** — atoms, molecules, organisms. Nothing else exists.
+3. **No specialized code** — if a component isn't reusable, it's not an atom
+4. **New page = new object, zero new code** (if existing building blocks suffice)
+5. **Callbacks = real function references** — IDE can navigate directly to them
+6. **No magic strings for binding** — use stores/signals, not `bind: 'user.name'`
 
 ---
 
-## Mappstruktur
+## Why Svelte
+
+| Problem in Angular implementation | Svelte solution |
+|-----------------------------------|-----------------|
+| jQuery workaround for form values | `bind:value` works out of the box |
+| `{{onChange()}}` every render cycle | `$derived` / `$effect` in Svelte 5 |
+| NgSwitch with 30 cases | `<svelte:component this={...}>` |
+| Large inline templates | Svelte components are naturally small |
+
+---
+
+## Folder Structure
 
 ```
 src/
@@ -39,14 +39,14 @@ src/
     molecules/        -> FormField, Actions, Card, ...
     organisms/        -> Table, Form, Sidebar, ...
     renderer/         -> PageRenderer, SectionRenderer
-    types/            -> Alla interfaces
-  pages/              -> Sidobjekt (deklarativ data)
-  services/           -> Affärslogik, API-anrop
+    types/            -> All interfaces
+  pages/              -> Page objects (declarative data)
+  services/           -> Business logic, API calls
 ```
 
 ---
 
-## Interfaces (typerna som styr allt)
+## Interfaces (the types that control everything)
 
 ### Atoms
 
@@ -65,10 +65,10 @@ export type Atom =
   | BadgeAtom
   | LabelAtom;
 
-/** Gemensamma properties för alla atoms */
+/** Common properties for all atoms */
 interface BaseAtom {
-  visible?: () => boolean;        // villkorad rendering - returnerar false = göms
-  validate?: (value: string) => true | string;  // true = OK, string = felmeddelande
+  visible?: () => boolean;        // conditional rendering - returns false = hidden
+  validate?: (value: string) => true | string;  // true = OK, string = error message
 }
 
 export interface InputAtom extends BaseAtom {
@@ -111,7 +111,7 @@ export interface ButtonAtom extends BaseAtom {
   submit?: boolean;
   disabled?: boolean;
   onClick?: () => void;
-  confirm?: string; // "Är du säker?" -> visar dialog först
+  confirm?: string; // "Are you sure?" -> shows dialog first
 }
 
 export interface UploadAtom extends BaseAtom {
@@ -245,44 +245,44 @@ export type Section = Atom | Molecule | Organism;
 
 ---
 
-## Exempel: Sidobjekt (detta är all "kod" som behövs per sida)
+## Example: Page Objects (this is all the "code" needed per page)
 
-### Registrera prov
+### Register Sample
 
 ```typescript
-// pages/registrera-prov.ts
+// pages/register-sample.ts
 import type { Page } from "../ui/types/page";
-import { provService } from "../services/prov.service";
-import { grunddataService } from "../services/grunddata.service";
+import { sampleService } from "../services/sample.service";
+import { referenceDataService } from "../services/reference-data.service";
 import { router } from "../router";
 
-export const registreraProv: Page = {
+export const registerSample: Page = {
   layout: "centered",
-  title: "Registrera prov",
+  title: "Register Sample",
   sections: [
     {
       molecule: "form",
-      id: "prov-form",
-      onSubmit: provService.create,
+      id: "sample-form",
+      onSubmit: sampleService.create,
       fields: [
-        { atom: "input", id: "namn", label: "Provnamn", required: true },
+        { atom: "input", id: "name", label: "Sample Name", required: true },
         {
           atom: "select",
           id: "organism",
           label: "Organism",
-          options: grunddataService.getOrganismer,
-          placeholder: "Välj organism...",
+          options: referenceDataService.getOrganisms,
+          placeholder: "Select organism...",
         },
         {
           atom: "radio",
-          id: "primarOdling",
-          label: "Från primärodling?",
-          options: ["Ja", "Nej", "Vet ej"],
+          id: "primaryCulture",
+          label: "From primary culture?",
+          options: ["Yes", "No", "Unknown"],
         },
         {
           atom: "upload",
-          id: "provfil",
-          label: "Ladda upp sekvensfil",
+          id: "sampleFile",
+          label: "Upload sequence file",
           accept: [".fastq", ".fasta", ".bam"],
         },
       ],
@@ -290,41 +290,41 @@ export const registreraProv: Page = {
     {
       molecule: "actions",
       items: [
-        { atom: "button", text: "Spara", variant: "primary", submit: true },
-        { atom: "button", text: "Avbryt", onClick: router.back },
+        { atom: "button", text: "Save", variant: "primary", submit: true },
+        { atom: "button", text: "Cancel", onClick: router.back },
       ],
     },
   ],
 };
 ```
 
-### Lista prover
+### List Samples
 
 ```typescript
-// pages/lista-prover.ts
+// pages/list-samples.ts
 import type { Page } from "../ui/types/page";
-import { provService } from "../services/prov.service";
+import { sampleService } from "../services/sample.service";
 import { router } from "../router";
 
-export const listaProver: Page = {
+export const listSamples: Page = {
   layout: "full",
-  title: "Prover",
+  title: "Samples",
   sections: [
     {
       organism: "table",
-      id: "prov-tabell",
-      data: provService.list,
+      id: "sample-table",
+      data: sampleService.list,
       searchable: true,
       sortable: true,
-      onRowClick: (row) => router.push(`/prov/${row.id}`),
+      onRowClick: (row) => router.push(`/sample/${row.id}`),
       columns: [
-        { field: "namn", header: "Provnamn" },
+        { field: "name", header: "Sample Name" },
         { field: "organism", header: "Organism" },
         {
           field: "status",
           header: "Status",
           render: "badge",
-          colorMap: { Klar: "green", Pågår: "yellow", Fel: "red" },
+          colorMap: { Complete: "green", InProgress: "yellow", Error: "red" },
         },
         {
           field: "actions",
@@ -333,10 +333,10 @@ export const listaProver: Page = {
           items: [
             {
               atom: "button",
-              text: "Ta bort",
+              text: "Delete",
               variant: "danger",
-              onClick: provService.delete,
-              confirm: "Är du säker?",
+              onClick: sampleService.delete,
+              confirm: "Are you sure?",
             },
           ],
         },
@@ -346,28 +346,28 @@ export const listaProver: Page = {
 };
 ```
 
-### Inspektera prov (detaljvy)
+### Inspect Sample (detail view)
 
 ```typescript
-// pages/inspektera-prov.ts
+// pages/inspect-sample.ts
 import type { Page } from "../ui/types/page";
-import { provService } from "../services/prov.service";
+import { sampleService } from "../services/sample.service";
 
-export const inspekteraProv = (prov: Prov): Page => ({
+export const inspectSample = (sample: Sample): Page => ({
   layout: "centered",
-  title: `Prov: ${prov.namn}`,
+  title: `Sample: ${sample.name}`,
   sections: [
     {
       molecule: "card",
-      title: "Provuppgifter",
+      title: "Sample Details",
       items: [
         {
           molecule: "label-value",
           items: [
-            { label: "Provnamn", value: prov.namn },
-            { label: "Organism", value: prov.organism },
-            { label: "Status", value: prov.status },
-            { label: "Skapad", value: prov.skapad },
+            { label: "Sample Name", value: sample.name },
+            { label: "Organism", value: sample.organism },
+            { label: "Status", value: sample.status },
+            { label: "Created", value: sample.created },
           ],
         },
       ],
@@ -375,8 +375,8 @@ export const inspekteraProv = (prov: Prov): Page => ({
     {
       molecule: "actions",
       items: [
-        { atom: "button", text: "Redigera", variant: "primary", onClick: () => router.push(`/prov/${prov.id}/edit`) },
-        { atom: "button", text: "Ta bort", variant: "danger", onClick: () => provService.delete(prov.id), confirm: "Är du säker?" },
+        { atom: "button", text: "Edit", variant: "primary", onClick: () => router.push(`/sample/${sample.id}/edit`) },
+        { atom: "button", text: "Delete", variant: "danger", onClick: () => sampleService.delete(sample.id), confirm: "Are you sure?" },
       ],
     },
   ],
@@ -385,7 +385,7 @@ export const inspekteraProv = (prov: Prov): Page => ({
 
 ---
 
-## Renderer (Svelte-motorn)
+## Renderer (The Svelte Engine)
 
 ### PageRenderer
 
@@ -443,7 +443,7 @@ export const inspekteraProv = (prov: Prov): Page => ({
   import Input from "../atoms/Input.svelte";
   import Select from "../atoms/Select.svelte";
   import Button from "../atoms/Button.svelte";
-  // ... övriga atoms
+  // ... other atoms
 
   let { config }: { config: Atom } = $props();
 
@@ -466,7 +466,7 @@ export const inspekteraProv = (prov: Prov): Page => ({
 
 ---
 
-## Exempel: En atom (Input)
+## Example: An Atom (Input)
 
 ```svelte
 <!-- ui/atoms/Input.svelte -->
@@ -498,19 +498,19 @@ export const inspekteraProv = (prov: Prov): Page => ({
 
 ---
 
-## Routing (koppla URL -> sidobjekt)
+## Routing (connecting URL -> page object)
 
 ```typescript
 // router/routes.ts
-import { registreraProv } from "../pages/registrera-prov";
-import { listaProver } from "../pages/lista-prover";
-import { inspekteraProv } from "../pages/inspektera-prov";
-import { provService } from "../services/prov.service";
+import { registerSample } from "../pages/register-sample";
+import { listSamples } from "../pages/list-samples";
+import { inspectSample } from "../pages/inspect-sample";
+import { sampleService } from "../services/sample.service";
 
 export const routes = [
-  { path: "/prover", page: listaProver },
-  { path: "/prover/ny", page: registreraProv },
-  { path: "/prover/:id", page: async (params) => inspekteraProv(await provService.get(params.id)) },
+  { path: "/samples", page: listSamples },
+  { path: "/samples/new", page: registerSample },
+  { path: "/samples/:id", page: async (params) => inspectSample(await sampleService.get(params.id)) },
 ];
 ```
 
@@ -526,11 +526,11 @@ export const routes = [
 
 ---
 
-## Reaktivt state (hur sektioner kommunicerar)
+## Reactive State (how sections communicate)
 
-Sektioner kan dela state via Svelte stores/signals. En store definieras i en service eller dedikerad store-fil och refereras av flera sektioner.
+Sections can share state via Svelte stores/signals. A store is defined in a service or dedicated store file and referenced by multiple sections.
 
-### Exempel: Select filtrerar tabell
+### Example: Select filters table
 
 ```typescript
 // stores/filter.store.ts
@@ -540,31 +540,31 @@ export const selectedOrganism = writable<string>("");
 ```
 
 ```typescript
-// pages/filtrerad-lista.ts
+// pages/filtered-list.ts
 import type { Page } from "../ui/types/page";
 import { selectedOrganism } from "../stores/filter.store";
-import { provService } from "../services/prov.service";
-import { grunddataService } from "../services/grunddata.service";
+import { sampleService } from "../services/sample.service";
+import { referenceDataService } from "../services/reference-data.service";
 import { get } from "svelte/store";
 
-export const filtreradLista: Page = {
+export const filteredList: Page = {
   layout: "full",
-  title: "Prover",
+  title: "Samples",
   sections: [
     {
       atom: "select",
       id: "organism-filter",
-      label: "Filtrera på organism",
-      options: grunddataService.getOrganismer,
-      placeholder: "Alla...",
+      label: "Filter by organism",
+      options: referenceDataService.getOrganisms,
+      placeholder: "All...",
       onChange: (value) => selectedOrganism.set(value),
     },
     {
       organism: "table",
-      id: "prov-tabell",
-      data: () => provService.listByOrganism(get(selectedOrganism)),
+      id: "sample-table",
+      data: () => sampleService.listByOrganism(get(selectedOrganism)),
       columns: [
-        { field: "namn", header: "Provnamn" },
+        { field: "name", header: "Sample Name" },
         { field: "organism", header: "Organism" },
       ],
     },
@@ -572,49 +572,49 @@ export const filtreradLista: Page = {
 };
 ```
 
-### Exempel: Formulär som uppdaterar lista efter submit
+### Example: Form that updates list after submit
 
 ```typescript
-// stores/prov-list.store.ts
+// stores/sample-list.store.ts
 import { writable } from "svelte/store";
-import { provService } from "../services/prov.service";
-import type { Prov } from "../types/prov";
+import { sampleService } from "../services/sample.service";
+import type { Sample } from "../types/sample";
 
-export const provList = writable<Prov[]>([]);
+export const sampleList = writable<Sample[]>([]);
 
-export async function refreshProvList() {
-  provList.set(await provService.list());
+export async function refreshSampleList() {
+  sampleList.set(await sampleService.list());
 }
 ```
 
 ```typescript
-// pages/prover-med-form.ts
+// pages/samples-with-form.ts
 import type { Page } from "../ui/types/page";
-import { provService } from "../services/prov.service";
-import { refreshProvList, provList } from "../stores/prov-list.store";
+import { sampleService } from "../services/sample.service";
+import { refreshSampleList, sampleList } from "../stores/sample-list.store";
 import { get } from "svelte/store";
 
-export const proverMedForm: Page = {
+export const samplesWithForm: Page = {
   layout: "full",
-  title: "Hantera prover",
+  title: "Manage Samples",
   sections: [
     {
       molecule: "form",
-      id: "snabb-registrering",
+      id: "quick-register",
       onSubmit: async (values) => {
-        await provService.create(values);
-        await refreshProvList();
+        await sampleService.create(values);
+        await refreshSampleList();
       },
       fields: [
-        { atom: "input", id: "namn", label: "Provnamn", required: true },
+        { atom: "input", id: "name", label: "Sample Name", required: true },
       ],
     },
     {
       organism: "table",
-      id: "prov-tabell",
-      data: () => get(provList),
+      id: "sample-table",
+      data: () => get(sampleList),
       columns: [
-        { field: "namn", header: "Provnamn" },
+        { field: "name", header: "Sample Name" },
         { field: "status", header: "Status" },
       ],
     },
@@ -624,21 +624,21 @@ export const proverMedForm: Page = {
 
 ---
 
-## Loading & Error states
+## Loading & Error States
 
-Renderern hanterar asynkron data automatiskt. När `data` returnerar en `Promise` visas loading-state tills datat resolvas, och felmeddelande om det rejectas.
+The renderer handles asynchronous data automatically. When `data` returns a `Promise`, a loading state is shown until the data resolves, and an error message if it rejects.
 
-### Flöde
+### Flow
 
 ```
-data() anropas
+data() is called
     │
-    ├─ Promise pending  → Spinner visas
-    ├─ Promise resolved → Data renderas
-    └─ Promise rejected → Felmeddelande visas
+    ├─ Promise pending  → Spinner shown
+    ├─ Promise resolved → Data rendered
+    └─ Promise rejected → Error message shown
 ```
 
-### SectionRenderer med async-stöd
+### SectionRenderer with async support
 
 ```svelte
 <!-- ui/renderer/AsyncWrapper.svelte -->
@@ -663,7 +663,7 @@ data() anropas
 </script>
 
 {#if state === "loading"}
-  <div class="spinner" aria-label="Laddar...">⏳</div>
+  <div class="spinner" aria-label="Loading...">⏳</div>
 {:else if state === "error"}
   <div class="error-message" role="alert">{error}</div>
 {:else}
@@ -675,22 +675,22 @@ data() anropas
 
 ## Debugging
 
-Debugging hör hemma i **renderern**, inte i page-objekten. Håll datan ren.
+Debugging belongs in the **renderer**, not in the page objects. Keep the data clean.
 
-### Debug-flagga
+### Debug flag
 
 ```typescript
 // renderer/config.ts
 export const DEBUG = import.meta.env.DEV;
 ```
 
-### SectionRenderer med debug-läge
+### SectionRenderer with debug mode
 
 ```svelte
 <!-- ui/renderer/SectionRenderer.svelte -->
 <script lang="ts">
   import { DEBUG } from "./config";
-  // ... övrig kod
+  // ... other code
 </script>
 
 {#if DEBUG}
@@ -699,198 +699,198 @@ export const DEBUG = import.meta.env.DEV;
   </div>
 {/if}
 
-<!-- Faktisk rendering -->
+<!-- Actual rendering -->
 {#if level === "atom"}
   ...
 ```
 
-### Vad debug-läget visar
+### What debug mode shows
 
-- Vilken section-typ som renderas (`atom`, `molecule`, `organism`)
-- Vilken data som skickades in
-- Visuella gränser runt varje section
+- Which section type is being rendered (`atom`, `molecule`, `organism`)
+- What data was passed in
+- Visual boundaries around each section
 
-### Console-dump för DevTools
+### Console dump for DevTools
 
 ```typescript
-// App.svelte (endast i dev)
+// App.svelte (dev only)
 if (DEBUG) {
   window.__PAGE__ = currentPage;
   console.log('[page]', currentPage.title, currentPage.sections.length, 'sections');
 }
 ```
 
-Inspektera `__PAGE__` i browser console för att se hela strukturen.
+Inspect `__PAGE__` in browser console to see the entire structure.
 
-### Princip
+### Principle
 
-| Gör | Gör inte |
-|-----|----------|
-| Lägg debug-logik i renderern | Lägg logging i page-objekt |
-| En global `DEBUG`-flagga | Separata debug-props per atom |
-| Console + visuella gränser | Komplex tracing-infrastruktur |
-
----
-
-## Vad ger detta?
-
-| Fördel | Hur |
-|--------|-----|
-| **Autocomplete** | TypeScript-interfaces -> IDE föreslår rätt properties |
-| **Felmarkering** | Skriver du `atom: "inptu"` -> röd linje direkt |
-| **Refaktorering** | Byt namn på `InputAtom.label` -> uppdateras i alla sidor |
-| **Go-to-definition** | Ctrl+click på `provService.create` -> hoppar till servicen |
-| **Kopierbart** | Ny sida = kopiera objekt, byt data |
-| **Ingen specialkod** | Om atomerna räcker behöver du aldrig röra UI-kod |
-| **Testbart** | Sidobjekt är ren data -> enkelt att validera |
+| Do | Don't |
+|----|-------|
+| Put debug logic in the renderer | Put logging in page objects |
+| One global `DEBUG` flag | Separate debug props per atom |
+| Console + visual boundaries | Complex tracing infrastructure |
 
 ---
 
-## När behöver man skriva ny kod?
+## What does this give you?
 
-| Situation | Vad gör man |
-|-----------|-------------|
-| Ny sida med befintliga byggblock | Nytt TypeScript-objekt (data) |
-| Ny typ av fält (t.ex. ColorPicker) | Ny atom-komponent + interface |
-| Ny kombination (t.ex. Stepper/Wizard) | Ny molecule + interface |
-| Ny API-integration | Ny service |
-| Ny layout | Ny layout-variant i PageRenderer |
-
----
-
-## Jämförelse med Angular DynamicItem
-
-| Aspekt | Angular DynamicItem | Detta system |
-|--------|--------------------|----|
-| Typsäkerhet | Ett interface, 50+ optional props | Discriminated unions per atom |
-| IDE-feedback | Begränsad (allt matchar) | Full (bara rätt props visas) |
-| Reaktivitet | `{{onChange()}}` hack | Svelte 5 runes |
-| Formulärvärden | jQuery workaround | `bind:value` |
-| Struktur | Platt (allt = DynamicItem) | Hierarkisk (atom/molecule/organism) |
-| Callbacks | Strängar eller inline | Riktiga funktionsreferenser |
-| Utbyggbarhet | Ny case i switch | Ny komponent i map |
+| Benefit | How |
+|---------|-----|
+| **Autocomplete** | TypeScript interfaces → IDE suggests correct properties |
+| **Error marking** | Type `atom: "inptu"` → red line immediately |
+| **Refactoring** | Rename `InputAtom.label` → updates in all pages |
+| **Go-to-definition** | Ctrl+click on `sampleService.create` → jumps to service |
+| **Copyable** | New page = copy object, change data |
+| **No special code** | If atoms suffice, you never touch UI code |
+| **Testable** | Page objects are pure data → easy to validate |
 
 ---
 
-## Realistiskt sidexempel: Filter + Tabell + Actions
+## When do you need to write new code?
 
-Ett komplett exempel som visar stores, villkorad rendering, validering och asynkron data i samarbete.
+| Situation | What to do |
+|-----------|------------|
+| New page with existing building blocks | New TypeScript object (data) |
+| New type of field (e.g., ColorPicker) | New atom component + interface |
+| New combination (e.g., Stepper/Wizard) | New molecule + interface |
+| New API integration | New service |
+| New layout | New layout variant in PageRenderer |
 
-### Typer
+---
+
+## Comparison with Angular DynamicItem
+
+| Aspect | Angular DynamicItem | This system |
+|--------|---------------------|-------------|
+| Type safety | One interface, 50+ optional props | Discriminated unions per atom |
+| IDE feedback | Limited (everything matches) | Full (only relevant props shown) |
+| Reactivity | `{{onChange()}}` hack | Svelte 5 runes |
+| Form values | jQuery workaround | `bind:value` |
+| Structure | Flat (everything = DynamicItem) | Hierarchical (atom/molecule/organism) |
+| Callbacks | Strings or inline | Real function references |
+| Extensibility | New case in switch | New component in map |
+
+---
+
+## Realistic Page Example: Filter + Table + Actions
+
+A complete example showing stores, conditional rendering, validation, and async data working together.
+
+### Types
 
 ```typescript
-// types/agens.ts
-export interface Agens {
+// types/agent.ts
+export interface Agent {
   id: string;
-  namn: string;
+  name: string;
   organism: string;
-  resistens: string;
-  status: "Aktiv" | "Arkiverad" | "Under analys";
-  registrerad: string;
+  resistance: string;
+  status: "Active" | "Archived" | "Under Analysis";
+  registered: string;
 }
 ```
 
 ### Store
 
 ```typescript
-// stores/agens.store.ts
+// stores/agent.store.ts
 import { writable, derived } from "svelte/store";
-import { agensService } from "../services/agens.service";
-import type { Agens } from "../types/agens";
+import { agentService } from "../services/agent.service";
+import type { Agent } from "../types/agent";
 
 export const organismFilter = writable<string>("");
 export const statusFilter = writable<string>("");
-export const agensList = writable<Agens[]>([]);
+export const agentList = writable<Agent[]>([]);
 
-export const filteredAgens = derived(
-  [agensList, organismFilter, statusFilter],
+export const filteredAgents = derived(
+  [agentList, organismFilter, statusFilter],
   ([$list, $organism, $status]) =>
     $list
       .filter((a) => !$organism || a.organism === $organism)
       .filter((a) => !$status || a.status === $status)
 );
 
-export async function loadAgens() {
-  agensList.set(await agensService.list());
+export async function loadAgents() {
+  agentList.set(await agentService.list());
 }
 ```
 
-### Sidobjekt
+### Page Object
 
 ```typescript
-// pages/agens-oversikt.ts
+// pages/agent-overview.ts
 import type { Page } from "../ui/types/page";
-import type { Agens } from "../types/agens";
+import type { Agent } from "../types/agent";
 import type { FormMolecule } from "../ui/types/molecules";
 import type { TableOrganism } from "../ui/types/organisms";
 import {
   organismFilter,
   statusFilter,
-  filteredAgens,
-  loadAgens,
-} from "../stores/agens.store";
-import { grunddataService } from "../services/grunddata.service";
-import { agensService } from "../services/agens.service";
+  filteredAgents,
+  loadAgents,
+} from "../stores/agent.store";
+import { referenceDataService } from "../services/reference-data.service";
+import { agentService } from "../services/agent.service";
 import { router } from "../router";
 import { get } from "svelte/store";
 
-// Typat formulär
-interface NyAgensForm {
-  namn: string;
+// Typed form
+interface NewAgentForm {
+  name: string;
   organism: string;
-  resistens: string;
+  resistance: string;
 }
 
-const nyAgensForm: FormMolecule<NyAgensForm> = {
+const newAgentForm: FormMolecule<NewAgentForm> = {
   molecule: "form",
-  id: "ny-agens",
+  id: "new-agent",
   onSubmit: async (values) => {
-    await agensService.create(values);
-    await loadAgens();
+    await agentService.create(values);
+    await loadAgents();
   },
   fields: [
     {
       atom: "input",
-      id: "namn",
-      label: "Namn",
+      id: "name",
+      label: "Name",
       required: true,
-      validate: (v) => v.length >= 2 || "Namn måste vara minst 2 tecken",
+      validate: (v) => v.length >= 2 || "Name must be at least 2 characters",
     },
     {
       atom: "select",
       id: "organism",
       label: "Organism",
-      options: grunddataService.getOrganismer,
+      options: referenceDataService.getOrganisms,
       required: true,
     },
     {
       atom: "input",
-      id: "resistens",
-      label: "Resistensprofil",
-      visible: () => get(organismFilter) !== "",  // visas bara om filter är satt
+      id: "resistance",
+      label: "Resistance Profile",
+      visible: () => get(organismFilter) !== "",  // only shown if filter is set
     },
   ],
 };
 
-const agensTabell: TableOrganism<Agens> = {
+const agentTable: TableOrganism<Agent> = {
   organism: "table",
-  id: "agens-tabell",
-  data: () => get(filteredAgens),
+  id: "agent-table",
+  data: () => get(filteredAgents),
   searchable: true,
   sortable: true,
   paginated: true,
-  onRowClick: (row) => router.push(`/agens/${row.id}`),
+  onRowClick: (row) => router.push(`/agent/${row.id}`),
   columns: [
-    { field: "namn", header: "Namn" },
+    { field: "name", header: "Name" },
     { field: "organism", header: "Organism" },
-    { field: "resistens", header: "Resistens" },
+    { field: "resistance", header: "Resistance" },
     {
       field: "status",
       header: "Status",
       render: "badge",
-      colorMap: { Aktiv: "green", Arkiverad: "gray", "Under analys": "yellow" },
+      colorMap: { Active: "green", Archived: "gray", "Under Analysis": "yellow" },
     },
-    { field: "registrerad", header: "Registrerad", render: "date" },
+    { field: "registered", header: "Registered", render: "date" },
     {
       field: "id",
       header: "",
@@ -898,33 +898,33 @@ const agensTabell: TableOrganism<Agens> = {
       items: [
         {
           atom: "button",
-          text: "Arkivera",
+          text: "Archive",
           variant: "secondary",
-          confirm: "Vill du arkivera denna agens?",
-          visible: () => true, // kan villkoras per rad i renderern
+          confirm: "Do you want to archive this agent?",
+          visible: () => true, // can be conditioned per row in renderer
         },
         {
           atom: "button",
-          text: "Ta bort",
+          text: "Delete",
           variant: "danger",
-          confirm: "Är du säker? Detta går inte att ångra.",
+          confirm: "Are you sure? This cannot be undone.",
         },
       ],
     },
   ],
 };
 
-export const agensOversikt: Page = {
+export const agentOverview: Page = {
   layout: "full",
-  title: "Agensöversikt",
+  title: "Agent Overview",
   sections: [
-    // Filter-rad
+    // Filter row
     {
       atom: "select",
       id: "organism-filter",
       label: "Organism",
-      options: grunddataService.getOrganismer,
-      placeholder: "Alla organismer...",
+      options: referenceDataService.getOrganisms,
+      placeholder: "All organisms...",
       onChange: (v) => organismFilter.set(v),
     },
     {
@@ -932,21 +932,21 @@ export const agensOversikt: Page = {
       id: "status-filter",
       label: "Status",
       options: [
-        { value: "Aktiv", label: "Aktiv" },
-        { value: "Arkiverad", label: "Arkiverad" },
-        { value: "Under analys", label: "Under analys" },
+        { value: "Active", label: "Active" },
+        { value: "Archived", label: "Archived" },
+        { value: "Under Analysis", label: "Under Analysis" },
       ],
-      placeholder: "Alla statusar...",
+      placeholder: "All statuses...",
       onChange: (v) => statusFilter.set(v),
     },
-    // Tabell
-    agensTabell,
-    // Registreringsformulär
-    nyAgensForm,
+    // Table
+    agentTable,
+    // Registration form
+    newAgentForm,
     {
       molecule: "actions",
       items: [
-        { atom: "button", text: "Registrera", variant: "primary", submit: true },
+        { atom: "button", text: "Register", variant: "primary", submit: true },
       ],
     },
   ],
@@ -955,71 +955,71 @@ export const agensOversikt: Page = {
 
 ---
 
-## Filosofi: Convention over enforcement
+## Philosophy: Convention over Enforcement
 
-Systemet är **inte en tvångströja**. Det är ett konvent som gör det enkelt att göra rätt.
+The system is **not a straitjacket**. It's a convention that makes it easy to do the right thing.
 
-- **Inget hindrar** dig från att skriva en vanlig Svelte-komponent utanför atom-systemet om behovet finns
-- **Men** om du håller dig till mönstret får du: autocomplete, validering, kopierbarhet, konsekvent UI
-- **Lint-regel** kan varna (inte blockera) om filer utanför `ui/` importerar DOM-element direkt:
+- **Nothing prevents** you from writing a regular Svelte component outside the atom system if needed
+- **But** if you follow the pattern you get: autocomplete, validation, copyability, consistent UI
+- **Lint rule** can warn (not block) if files outside `ui/` import DOM elements directly:
 
 ```javascript
-// .eslintrc.js (exempel)
+// .eslintrc.js (example)
 rules: {
   "no-restricted-imports": ["warn", {
     patterns: [{
       group: ["svelte/internal"],
-      message: "Använd ui/atoms istället för direkta DOM-element i sidobjekt"
+      message: "Use ui/atoms instead of direct DOM elements in page objects"
     }]
   }]
 }
 ```
 
-Tanken: gör det *lättare* att följa mönstret än att avvika från det, men lås inte in teamet.
+The idea: make it *easier* to follow the pattern than to deviate from it, but don't lock in the team.
 
 ---
 
-## Designmönster: Attribut triggar beteende
+## Design Pattern: Attribute Triggers Behavior
 
-Detta mönster genomsyrar hela systemet — både UI och affärslogik.
+This pattern permeates the entire system — both UI and business logic.
 
-### Principen
+### The Principle
 
 ```
-Om ett attribut finns på objektet → aktiveras motsvarande beteende
+If an attribute exists on the object → the corresponding behavior is activated
 ```
 
-### I UI-systemet
+### In the UI system
 
 ```typescript
 { atom: "input", visible: () => showField, validate: (v) => v.length > 0 }
-//               ↑ attribut finns = beteende aktiveras
+//               ↑ attribute exists = behavior activated
 ```
 
-### I affärslogik (samma mönster)
+### In business logic (same pattern)
 
 ```typescript
 { name: "Aged Brie", improveWithTime: { max: 50 }, expire: true }
-//                   ↑ attribut finns = behavior körs
+//                   ↑ attribute exists = behavior runs
 ```
 
-### Motorn (identisk struktur)
+### The Engine (identical structure)
 
 ```typescript
-// UI: för varje atom-typ, rendera rätt komponent
-// Logik: för varje attribut, kör motsvarande behavior
+// UI: for each atom type, render the right component
+// Logic: for each attribute, run the corresponding behavior
 for (const [key, behavior] of Object.entries(behaviors)) {
   if (key in item) behavior(item, item[key]);
 }
 ```
 
-### Varför detta fungerar
+### Why this works
 
-| | UI | Affärslogik |
+| | UI | Business Logic |
 |---|---|---|
 | Trigger | `atom: "input"` | `degrade: true` |
-| Behavior | Renderar komponent | Kör funktion |
-| Extension | Ny atom + interface | Nytt attribut + behavior |
-| Komposition | Sections med atoms | Items med behaviors |
+| Behavior | Renders component | Runs function |
+| Extension | New atom + interface | New attribute + behavior |
+| Composition | Sections with atoms | Items with behaviors |
 
-**Gyllene regeln:** Data beskriver VAD, motorn hanterar HUR.
+**Golden rule:** Data describes WHAT, the engine handles HOW.
