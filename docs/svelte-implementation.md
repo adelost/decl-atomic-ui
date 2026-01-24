@@ -107,6 +107,39 @@ src/
 
 ---
 
+## CSS Strategy
+
+The pattern is **CSS-agnostic** — each atom handles its own styling. Recommended approaches:
+
+| Approach | When to use |
+|----------|-------------|
+| **Tailwind + Bits UI** | Best flexibility. Bits UI = headless accessible primitives, Tailwind = styling |
+| **shadcn-svelte** | Fast start with pre-built components (uses Tailwind + Bits UI under the hood) |
+| **Skeleton UI** | Full component library, less customizable |
+| **Plain CSS/SCSS** | Full control, more work |
+
+**Recommendation:** Tailwind + Bits UI. You get accessible components without being locked to a design system.
+
+```svelte
+<!-- Example: Button atom with Tailwind -->
+<script lang="ts">
+  import type { ButtonAtom } from "../types";
+  let { text, variant = "primary", onClick }: ButtonAtom = $props();
+
+  const styles = {
+    primary: "bg-blue-600 hover:bg-blue-700 text-white",
+    secondary: "bg-gray-200 hover:bg-gray-300 text-gray-800",
+    danger: "bg-red-600 hover:bg-red-700 text-white",
+  };
+</script>
+
+<button class="px-4 py-2 rounded {styles[variant]}" onclick={onClick}>
+  {text}
+</button>
+```
+
+---
+
 ## Atom vs Molecule vs Organism
 
 How do you know which level a component belongs to? Use this quick test:
