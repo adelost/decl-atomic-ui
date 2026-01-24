@@ -480,8 +480,15 @@ export const inspectSample = (sample: Sample): Page => ({
 <script lang="ts">
   import type { InputAtom } from "../types/atoms";
 
-  let { id, label, required, placeholder, type = "text", onChange }: InputAtom = $props();
-  let value = $state("");
+  let { id, label, required, placeholder, type = "text", value: getValue, onChange }: InputAtom = $props();
+
+  // Initialize from getter, or empty string if no getter provided
+  let inputValue = $state(getValue?.() ?? "");
+
+  // Sync with external value changes (if getter updates)
+  $effect(() => {
+    if (getValue) inputValue = getValue();
+  });
 </script>
 
 <div class="form-field">
@@ -497,8 +504,8 @@ export const inspectSample = (sample: Sample): Page => ({
     {type}
     {placeholder}
     {required}
-    bind:value
-    onchange={() => onChange?.(value)}
+    bind:value={inputValue}
+    oninput={() => onChange?.(inputValue)}
   />
 </div>
 ```
