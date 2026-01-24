@@ -109,33 +109,62 @@ src/
 
 ## CSS Strategy
 
-The pattern is **CSS-agnostic** — each atom handles its own styling. Recommended approaches:
+The pattern is **CSS-agnostic** — each atom handles its own styling.
+
+### Recommended: shadcn-svelte
+
+```
+Melt UI (primitives) → Bits UI (headless) → shadcn-svelte (styled)
+```
+
+**Why shadcn-svelte:**
+- Pre-built, accessible components with great defaults
+- Copy-paste code you own (not a npm dependency)
+- Uses Tailwind + Bits UI under the hood
+- Easy to customize — it's just Tailwind classes
+- Theming built-in via CSS variables
+
+```bash
+# Setup
+npx shadcn-svelte@latest init
+npx shadcn-svelte@latest add button input select
+```
+
+```svelte
+<!-- Your atom wraps shadcn component -->
+<script lang="ts">
+  import { Button } from "$lib/components/ui/button";
+  import type { ButtonAtom } from "../types";
+
+  let { text, variant = "default", onClick }: ButtonAtom = $props();
+</script>
+
+<Button {variant} on:click={onClick}>{text}</Button>
+```
+
+### Alternatives
 
 | Approach | When to use |
 |----------|-------------|
-| **Tailwind + Bits UI** | Best flexibility. Bits UI = headless accessible primitives, Tailwind = styling |
-| **shadcn-svelte** | Fast start with pre-built components (uses Tailwind + Bits UI under the hood) |
-| **Skeleton UI** | Full component library, less customizable |
+| **Raw Bits UI + Tailwind** | You have a strict design system from a designer |
+| **Skeleton UI** | Want a full component library, less customization needed |
 | **Plain CSS/SCSS** | Full control, more work |
 
-**Recommendation:** Tailwind + Bits UI. You get accessible components without being locked to a design system.
+### When to go deeper (raw Bits UI)
+
+Only if shadcn components don't fit your design at all. Then use Bits UI primitives directly:
 
 ```svelte
-<!-- Example: Button atom with Tailwind -->
-<script lang="ts">
-  import type { ButtonAtom } from "../types";
-  let { text, variant = "primary", onClick }: ButtonAtom = $props();
-
-  const styles = {
-    primary: "bg-blue-600 hover:bg-blue-700 text-white",
-    secondary: "bg-gray-200 hover:bg-gray-300 text-gray-800",
-    danger: "bg-red-600 hover:bg-red-700 text-white",
-  };
+<script>
+  import { Dialog } from "bits-ui";
 </script>
 
-<button class="px-4 py-2 rounded {styles[variant]}" onclick={onClick}>
-  {text}
-</button>
+<Dialog.Root>
+  <Dialog.Trigger>Open</Dialog.Trigger>
+  <Dialog.Content>
+    <!-- Your custom styling -->
+  </Dialog.Content>
+</Dialog.Root>
 ```
 
 ---
