@@ -868,6 +868,66 @@ Inspect `__PAGE__` in browser console to see the entire structure.
 
 ---
 
+## Performance Tips
+
+The declarative pattern is efficient by default, but here are some gotchas to watch for:
+
+### Table row actions
+
+```typescript
+// ⚠️ Creates new array for each row on every render
+columns: [
+  { field: "id", header: "Actions", items: (row) => [
+    { atom: "button", text: "Edit", onClick: () => edit(row) }
+  ]}
+]
+
+// ✅ Better for large tables: memoize or define once
+const actionsFor = memoize((row) => [
+  { atom: "button", text: "Edit", onClick: () => edit(row) }
+]);
+```
+
+### Promise data refetching
+
+```typescript
+// ⚠️ Fetches on every render
+data: () => fetch('/api/items').then(r => r.json())
+
+// ✅ Cache in store, control when to refetch
+data: () => itemStore.items  // store handles caching
+```
+
+### Validation debounce
+
+```typescript
+// ⚠️ Runs on every keystroke (oninput)
+validate: (v) => expensiveCheck(v)
+
+// ✅ Debounce expensive validation
+validate: debounce((v) => expensiveCheck(v), 300)
+```
+
+### Circular store dependencies
+
+```typescript
+// ⚠️ Can cause infinite loops
+$effect(() => { storeA.x = storeB.y });
+$effect(() => { storeB.y = storeA.x });
+
+// ✅ Break the cycle with explicit triggers
+```
+
+### When it's NOT a problem
+
+- **Reactive getters** (`value: () => store.x`) - Svelte handles this efficiently
+- **Deeply nested pages** - rarely an issue unless extreme
+- **Many atoms on a page** - DOM updates are batched
+
+**Rule of thumb:** Start simple. Optimize only if you measure a real problem.
+
+---
+
 ## When do you need to write new code?
 
 | Situation | What to do |
