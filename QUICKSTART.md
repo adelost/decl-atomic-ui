@@ -25,11 +25,11 @@ const page: Page = {
 
 ## 2. Learn the Component Hierarchy
 
-| Level | What it is | Examples | Has own data? |
-|-------|------------|----------|---------------|
+| Level | What it is | Examples | Owns data/flow? |
+|-------|------------|----------|-----------------|
 | **Atom** | Primitive UI element | Input, Button, Badge, Label | No |
 | **Molecule** | Group of atoms | Form, Card, Actions | No |
-| **Organism** | Complex, owns data/flow | Table, Modal, Sidebar | Yes |
+| **Organism** | Complex, orchestrates parts | Table, Modal, Sidebar | Typically yes |
 
 **Quick test:**
 - Has `data: () => Promise<T[]>`? → Organism

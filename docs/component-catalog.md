@@ -24,9 +24,9 @@ export interface GridMolecule {
   columns: { sm: 1, md: 2, lg: 3 },
   gap: "md",
   items: [
-    { atom: "card", title: "Card 1", items: [...] },
-    { atom: "card", title: "Card 2", items: [...] },
-    { atom: "card", title: "Card 3", items: [...] },
+    { molecule: "card", title: "Card 1", items: [...] },
+    { molecule: "card", title: "Card 2", items: [...] },
+    { molecule: "card", title: "Card 3", items: [...] },
   ]
 }
 ```

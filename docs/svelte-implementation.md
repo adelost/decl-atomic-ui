@@ -349,7 +349,7 @@ export type Section = Atom | Molecule | Organism;
 
 ```typescript
 // pages/register-sample.ts
-import type { Page } from "../ui/types/page";
+import type { Page } from "../ui/types";
 import { sampleService } from "../services/sample.service";
 import { referenceDataService } from "../services/reference-data.service";
 import { router } from "../router";
@@ -400,7 +400,7 @@ export const registerSample: Page = {
 
 ```typescript
 // pages/list-samples.ts
-import type { Page } from "../ui/types/page";
+import type { Page } from "../ui/types";
 import { sampleService } from "../services/sample.service";
 import { router } from "../router";
 
@@ -448,7 +448,7 @@ export const listSamples: Page = {
 
 ```typescript
 // pages/inspect-sample.ts
-import type { Page } from "../ui/types/page";
+import type { Page } from "../ui/types";
 import { sampleService } from "../services/sample.service";
 
 export const inspectSample = (sample: Sample): Page => ({
@@ -646,7 +646,7 @@ export const selectedOrganism = writable<string>("");
 
 ```typescript
 // pages/filtered-list.ts
-import type { Page } from "../ui/types/page";
+import type { Page } from "../ui/types";
 import { selectedOrganism } from "../stores/filter.store";
 import { sampleService } from "../services/sample.service";
 import { referenceDataService } from "../services/reference-data.service";
@@ -694,7 +694,7 @@ export async function refreshSampleList() {
 
 ```typescript
 // pages/samples-with-form.ts
-import type { Page } from "../ui/types/page";
+import type { Page } from "../ui/types";
 import { sampleService } from "../services/sample.service";
 import { refreshSampleList, sampleList } from "../stores/sample-list.store";
 import { get } from "svelte/store";
@@ -987,10 +987,8 @@ export async function loadAgents() {
 
 ```typescript
 // pages/agent-overview.ts
-import type { Page } from "../ui/types/page";
+import type { Page, FormMolecule, TableOrganism } from "../ui/types";
 import type { Agent } from "../types/agent";
-import type { FormMolecule } from "../ui/types/molecules";
-import type { TableOrganism } from "../ui/types/organisms";
 import {
   organismFilter,
   statusFilter,
