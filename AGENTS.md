@@ -46,24 +46,47 @@ If an attribute exists → the corresponding behavior activates
 | Attribute | Behavior |
 |-----------|----------|
 | `atom: "input"` | Renders InputAtom component |
-| `visible: () => boolean` | Conditional rendering |
-| `value: () => T` | Reactive value binding (getter) |
-| `validate: (v: T) => true \| string` | Per-atom validation (type matches atom) |
+| `visible: () => boolean` | Conditional rendering (BaseAtom) |
+| `value: () => T` | Reactive value getter (FormAtom<T>) |
+| `onChange: (v: T) => void` | Value change handler (FormAtom<T>) |
+| `validate: (v: T) => true \| string` | Validation, type matches atom (FormAtom<T>) |
 | `columns: [...]` | Table renders columns |
 
 ## Type Pattern
 
 ```typescript
 // Discriminated union - TypeScript narrows type based on `atom`
-type Atom = InputAtom | ButtonAtom | SelectAtom;
+type Atom = InputAtom | ButtonAtom | SelectAtom | CheckboxAtom;
 
-interface InputAtom {
+// Base interfaces
+interface BaseAtom {
+  visible?: () => boolean;
+}
+
+interface FormAtom<T> extends BaseAtom {
+  value?: () => T;
+  onChange?: (value: T) => void;
+  validate?: (value: T) => true | string;
+}
+
+// Form atoms extend FormAtom<T> with their value type
+interface InputAtom extends FormAtom<string> {
   atom: "input";        // ← discriminator
   id: string;
+  label?: string;
+}
+
+interface CheckboxAtom extends FormAtom<boolean> {
+  atom: "checkbox";
+  id: string;
   label: string;
-  value?: () => string;                        // reactive getter
-  onChange?: (value: string) => void;
-  validate?: (value: string) => true | string; // per-atom validation
+}
+
+// Non-form atoms extend BaseAtom directly
+interface ButtonAtom extends BaseAtom {
+  atom: "button";
+  text: string;
+  onClick?: () => void;
 }
 ```
 

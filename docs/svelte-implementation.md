@@ -67,31 +67,32 @@ export type Atom =
 
 /** Common properties for all atoms */
 interface BaseAtom {
-  visible?: () => boolean;        // conditional rendering - returns false = hidden
+  visible?: () => boolean;  // conditional rendering - returns false = hidden
 }
 
-export interface InputAtom extends BaseAtom {
+/** Form field atoms with typed value binding */
+interface FormAtom<T> extends BaseAtom {
+  value?: () => T;                        // reactive value getter
+  onChange?: (value: T) => void;          // called on value change
+  validate?: (value: T) => true | string; // true = OK, string = error message
+}
+
+export interface InputAtom extends FormAtom<string> {
   atom: "input";
   id: string;
   label?: string;
   required?: boolean;
   placeholder?: string;
   type?: "text" | "email" | "password" | "number";
-  value?: () => string;                              // reactive value getter
-  onChange?: (value: string) => void;
-  validate?: (value: string) => true | string;       // true = OK, string = error message
 }
 
-export interface SelectAtom extends BaseAtom {
+export interface SelectAtom extends FormAtom<string> {
   atom: "select";
   id: string;
   label?: string;
   options: SelectOption[] | (() => SelectOption[]);
   placeholder?: string;
   required?: boolean;
-  value?: () => string;                              // reactive value getter
-  onChange?: (value: string) => void;
-  validate?: (value: string) => true | string;
 }
 
 export interface SelectOption {
@@ -99,15 +100,12 @@ export interface SelectOption {
   label: string;
 }
 
-export interface RadioAtom extends BaseAtom {
+export interface RadioAtom extends FormAtom<string> {
   atom: "radio";
   id: string;
   label?: string;
   options: string[];
   required?: boolean;
-  value?: () => string;                              // reactive value getter
-  onChange?: (value: string) => void;
-  validate?: (value: string) => true | string;
 }
 
 export interface ButtonAtom extends BaseAtom {
@@ -115,63 +113,51 @@ export interface ButtonAtom extends BaseAtom {
   text: string;
   variant?: "primary" | "secondary" | "danger" | "link";
   submit?: boolean;
-  disabled?: boolean | (() => boolean);              // can be reactive
+  disabled?: boolean | (() => boolean);
   onClick?: () => void;
   confirm?: string; // "Are you sure?" -> shows dialog first
 }
 
-export interface UploadAtom extends BaseAtom {
+export interface UploadAtom extends FormAtom<File | File[] | null> {
   atom: "upload";
   id: string;
   label?: string;
   accept?: string[];
   multiple?: boolean;
   required?: boolean;
-  value?: () => File | File[] | null;                // reactive value getter
-  onChange?: (files: File | File[] | null) => void;
-  validate?: (files: File | File[] | null) => true | string;
 }
 
-export interface CheckboxAtom extends BaseAtom {
+export interface CheckboxAtom extends FormAtom<boolean> {
   atom: "checkbox";
   id: string;
   label: string;
-  checked?: () => boolean;                           // reactive checked getter
-  onChange?: (checked: boolean) => void;
-  validate?: (checked: boolean) => true | string;
 }
 
-export interface DateAtom extends BaseAtom {
+export interface DateAtom extends FormAtom<Date | string | null> {
   atom: "date";
   id: string;
   label?: string;
   required?: boolean;
-  value?: () => Date | string | null;                // reactive value getter
-  onChange?: (value: Date | string | null) => void;
-  validate?: (value: Date | string | null) => true | string;
 }
 
-export interface TextAreaAtom extends BaseAtom {
+export interface TextAreaAtom extends FormAtom<string> {
   atom: "textarea";
   id: string;
   label?: string;
   placeholder?: string;
   rows?: number;
   required?: boolean;
-  value?: () => string;                              // reactive value getter
-  onChange?: (value: string) => void;
-  validate?: (value: string) => true | string;
 }
 
 export interface BadgeAtom extends BaseAtom {
   atom: "badge";
-  text: string | (() => string);                     // can be reactive
+  text: string | (() => string);
   color: "green" | "yellow" | "red" | "blue" | "gray" | (() => "green" | "yellow" | "red" | "blue" | "gray");
 }
 
 export interface LabelAtom extends BaseAtom {
   atom: "label";
-  text: string | (() => string);                     // can be reactive
+  text: string | (() => string);
   tooltip?: string;
 }
 ```
