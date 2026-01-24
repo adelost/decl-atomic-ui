@@ -142,6 +142,13 @@ npx shadcn-svelte@latest add button input select
 <Button {variant} on:click={onClick}>{text}</Button>
 ```
 
+**Note:** Wrapping is optional. Use shadcn components directly if you don't need to:
+- Limit which props are exposed
+- Add project-specific logic
+- Simplify the API for your team
+
+Otherwise, a wrapper is just an extra layer without value.
+
 ### Why shadcn over raw Bits UI?
 
 **shadcn-svelte (what you write):**
@@ -263,6 +270,37 @@ $effect(() => {
 | CSS variables | Yes - swap colors/spacing |
 
 **Result:** New theme = new CSS file. Zero changes to pages or atom interfaces.
+
+### Conditional class objects (for radical differences)
+
+When themes need different structure/animations, not just colors:
+
+```svelte
+<!-- Button.svelte -->
+<script>
+  import { theme } from '$lib/stores/theme';
+
+  const themes = {
+    default: "rounded-lg bg-blue-500 px-4 py-2",
+    brutalist: "border-4 border-black uppercase px-6 py-3",
+    playful: "rounded-full bg-pink-400 px-8 py-3 animate-bounce"
+  };
+</script>
+
+<button class={themes[$theme]}>
+  <slot />
+</button>
+```
+
+This gives radically different looks without code duplication.
+
+### Theming strategy summary
+
+| Strategy | When to use |
+|----------|-------------|
+| **CSS Variables** | Colors, spacing, roundness (90% of cases) |
+| **Conditional class objects** | Different structure/animations per theme |
+| **Multiple atom sets** | Almost never worth it (maintenance nightmare) |
 
 ---
 
