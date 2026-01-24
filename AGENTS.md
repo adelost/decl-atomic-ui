@@ -47,7 +47,8 @@ If an attribute exists → the corresponding behavior activates
 |-----------|----------|
 | `atom: "input"` | Renders InputAtom component |
 | `visible: () => boolean` | Conditional rendering |
-| `validate: (v) => true \| string` | Validation with error message |
+| `value: () => T` | Reactive value binding (getter) |
+| `validate: (v: T) => true \| string` | Per-atom validation (type matches atom) |
 | `columns: [...]` | Table renders columns |
 
 ## Type Pattern
@@ -60,7 +61,9 @@ interface InputAtom {
   atom: "input";        // ← discriminator
   id: string;
   label: string;
+  value?: () => string;                        // reactive getter
   onChange?: (value: string) => void;
+  validate?: (value: string) => true | string; // per-atom validation
 }
 ```
 

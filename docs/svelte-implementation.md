@@ -68,7 +68,6 @@ export type Atom =
 /** Common properties for all atoms */
 interface BaseAtom {
   visible?: () => boolean;        // conditional rendering - returns false = hidden
-  validate?: (value: string) => true | string;  // true = OK, string = error message
 }
 
 export interface InputAtom extends BaseAtom {
@@ -78,7 +77,9 @@ export interface InputAtom extends BaseAtom {
   required?: boolean;
   placeholder?: string;
   type?: "text" | "email" | "password" | "number";
+  value?: () => string;                              // reactive value getter
   onChange?: (value: string) => void;
+  validate?: (value: string) => true | string;       // true = OK, string = error message
 }
 
 export interface SelectAtom extends BaseAtom {
@@ -88,7 +89,9 @@ export interface SelectAtom extends BaseAtom {
   options: SelectOption[] | (() => SelectOption[]);
   placeholder?: string;
   required?: boolean;
+  value?: () => string;                              // reactive value getter
   onChange?: (value: string) => void;
+  validate?: (value: string) => true | string;
 }
 
 export interface SelectOption {
@@ -102,6 +105,9 @@ export interface RadioAtom extends BaseAtom {
   label?: string;
   options: string[];
   required?: boolean;
+  value?: () => string;                              // reactive value getter
+  onChange?: (value: string) => void;
+  validate?: (value: string) => true | string;
 }
 
 export interface ButtonAtom extends BaseAtom {
@@ -109,7 +115,7 @@ export interface ButtonAtom extends BaseAtom {
   text: string;
   variant?: "primary" | "secondary" | "danger" | "link";
   submit?: boolean;
-  disabled?: boolean;
+  disabled?: boolean | (() => boolean);              // can be reactive
   onClick?: () => void;
   confirm?: string; // "Are you sure?" -> shows dialog first
 }
@@ -121,14 +127,18 @@ export interface UploadAtom extends BaseAtom {
   accept?: string[];
   multiple?: boolean;
   required?: boolean;
+  value?: () => File | File[] | null;                // reactive value getter
+  onChange?: (files: File | File[] | null) => void;
+  validate?: (files: File | File[] | null) => true | string;
 }
 
 export interface CheckboxAtom extends BaseAtom {
   atom: "checkbox";
   id: string;
   label: string;
-  checked?: boolean;
+  checked?: () => boolean;                           // reactive checked getter
   onChange?: (checked: boolean) => void;
+  validate?: (checked: boolean) => true | string;
 }
 
 export interface DateAtom extends BaseAtom {
@@ -136,6 +146,9 @@ export interface DateAtom extends BaseAtom {
   id: string;
   label?: string;
   required?: boolean;
+  value?: () => Date | string | null;                // reactive value getter
+  onChange?: (value: Date | string | null) => void;
+  validate?: (value: Date | string | null) => true | string;
 }
 
 export interface TextAreaAtom extends BaseAtom {
@@ -145,17 +158,20 @@ export interface TextAreaAtom extends BaseAtom {
   placeholder?: string;
   rows?: number;
   required?: boolean;
+  value?: () => string;                              // reactive value getter
+  onChange?: (value: string) => void;
+  validate?: (value: string) => true | string;
 }
 
 export interface BadgeAtom extends BaseAtom {
   atom: "badge";
-  text: string;
-  color: "green" | "yellow" | "red" | "blue" | "gray";
+  text: string | (() => string);                     // can be reactive
+  color: "green" | "yellow" | "red" | "blue" | "gray" | (() => "green" | "yellow" | "red" | "blue" | "gray");
 }
 
 export interface LabelAtom extends BaseAtom {
   atom: "label";
-  text: string;
+  text: string | (() => string);                     // can be reactive
   tooltip?: string;
 }
 ```
@@ -174,9 +190,12 @@ export type Molecule =
 export interface FormMolecule<T = Record<string, unknown>> {
   molecule: "form";
   id: string;
-  onSubmit: (values: T) => void;
+  onSubmit: (values: T) => void;  // values object uses field.id as keys
   fields: Atom[];
 }
+// Note: Form collects values by field `id`. Example:
+// fields: [{ atom: "input", id: "name" }, { atom: "input", id: "email" }]
+// onSubmit receives: { name: "...", email: "..." }
 
 export interface ActionsMolecule {
   molecule: "actions";
@@ -220,8 +239,10 @@ export interface TableColumn<T = Record<string, unknown>> {
   header: string;
   render?: "text" | "badge" | "actions" | "date";
   colorMap?: Record<string, "green" | "yellow" | "red" | "blue">;
-  items?: ButtonAtom[];
+  items?: ButtonAtom[] | ((row: T) => ButtonAtom[]);  // function receives row for context
 }
+// Note: For row-specific actions, use function form:
+// items: (row) => [{ atom: "button", text: "Delete", onClick: () => deleteRow(row.id) }]
 
 export interface SidebarOrganism {
   organism: "sidebar";

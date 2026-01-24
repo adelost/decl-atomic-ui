@@ -80,7 +80,7 @@
     "body": [
       "{",
       "  molecule: \"actions\",",
-      "  buttons: [",
+      "  items: [",
       "    { atom: \"button\", text: \"${1:Save}\", variant: \"primary\", onClick: ${2:handleSave} },",
       "    { atom: \"button\", text: \"${3:Cancel}\", variant: \"secondary\", onClick: ${4:handleCancel} }",
       "  ]",
@@ -127,5 +127,20 @@
     "prefix": "validate",
     "body": "validate: (v) => ${1:v.length > 0} || \"${2:Error message}\",",
     "description": "Validation with error message"
+  },
+  "Table column with row actions": {
+    "prefix": "col-actions",
+    "body": [
+      "{",
+      "  field: \"${1:id}\",",
+      "  header: \"Actions\",",
+      "  render: \"actions\",",
+      "  items: (row) => [",
+      "    { atom: \"button\", text: \"Edit\", variant: \"secondary\", onClick: () => ${2:handleEdit}(row) },",
+      "    { atom: \"button\", text: \"Delete\", variant: \"danger\", onClick: () => ${3:handleDelete}(row.${1:id}) }",
+      "  ]",
+      "},"
+    ],
+    "description": "Table column with row-specific action buttons"
   }
 }
