@@ -104,6 +104,18 @@ export interface TabItem {
 
 ## Overlays
 
+**Z-index scale** (define early to avoid conflicts):
+
+```css
+:root {
+  --z-dropdown: 100;
+  --z-modal: 200;
+  --z-drawer: 200;
+  --z-toast: 300;
+  --z-tooltip: 400;
+}
+```
+
 ### ModalOrganism
 
 ```typescript
