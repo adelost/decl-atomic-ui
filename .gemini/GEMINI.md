@@ -1,0 +1,1 @@
+# Gemini Context\n\nSee [AGENTS.md](../AGENTS.md) for full context.\n\n## Quick Reference\n\n**Pattern:** Pages are typed objects, not code. Renderer interprets them.\n**State binding:** Use `onChange: (v) => store.field = v`, NOT `bind: "store.field"`\n
