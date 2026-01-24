@@ -8,6 +8,53 @@ TypeScript interfaces provide full IDE support: autocomplete, error marking, ref
 
 ---
 
+## Core Pattern: Attribute Triggers Behavior
+
+This pattern permeates the entire system — both UI and business logic.
+
+### The Principle
+
+```
+If an attribute exists on the object → the corresponding behavior is activated
+```
+
+### In the UI system
+
+```typescript
+{ atom: "input", visible: () => showField, validate: (v) => v.length > 0 }
+//               ↑ attribute exists = behavior activated
+```
+
+### In business logic (same pattern)
+
+```typescript
+{ name: "Aged Brie", improveWithTime: { max: 50 }, expire: true }
+//                   ↑ attribute exists = behavior runs
+```
+
+### The Engine (identical structure)
+
+```typescript
+// UI: for each atom type, render the right component
+// Logic: for each attribute, run the corresponding behavior
+for (const [key, behavior] of Object.entries(behaviors)) {
+  if (key in item) behavior(item, item[key]);
+}
+```
+
+### Why this works
+
+| | UI | Business Logic |
+|---|---|---|
+| Trigger | `atom: "input"` | `degrade: true` |
+| Behavior | Renders component | Runs function |
+| Extension | New atom + interface | New attribute + behavior |
+| Composition | Sections with atoms | Items with behaviors |
+
+**Golden rule:** Data describes WHAT, the engine handles HOW.
+
+---
+
 ## Principles
 
 1. **Pages = data** — a page file is just a typed object, no logic
@@ -16,6 +63,20 @@ TypeScript interfaces provide full IDE support: autocomplete, error marking, ref
 4. **New page = new object, zero new code** (if existing building blocks suffice)
 5. **Callbacks = real function references** — IDE can navigate directly to them
 6. **No magic strings for binding** — use stores/signals, not `bind: 'user.name'`
+
+---
+
+## What does this give you?
+
+| Benefit | How |
+|---------|-----|
+| **Autocomplete** | TypeScript interfaces → IDE suggests correct properties |
+| **Error marking** | Type `atom: "inptu"` → red line immediately |
+| **Refactoring** | Rename `InputAtom.label` → updates in all pages |
+| **Go-to-definition** | Ctrl+click on `sampleService.create` → jumps to service |
+| **Copyable** | New page = copy object, change data |
+| **No special code** | If atoms suffice, you never touch UI code |
+| **Testable** | Page objects are pure data → easy to validate |
 
 ---
 
@@ -776,20 +837,6 @@ Inspect `__PAGE__` in browser console to see the entire structure.
 
 ---
 
-## What does this give you?
-
-| Benefit | How |
-|---------|-----|
-| **Autocomplete** | TypeScript interfaces → IDE suggests correct properties |
-| **Error marking** | Type `atom: "inptu"` → red line immediately |
-| **Refactoring** | Rename `InputAtom.label` → updates in all pages |
-| **Go-to-definition** | Ctrl+click on `sampleService.create` → jumps to service |
-| **Copyable** | New page = copy object, change data |
-| **No special code** | If atoms suffice, you never touch UI code |
-| **Testable** | Page objects are pure data → easy to validate |
-
----
-
 ## When do you need to write new code?
 
 | Situation | What to do |
@@ -1006,53 +1053,6 @@ rules: {
 ```
 
 The idea: make it *easier* to follow the pattern than to deviate from it, but don't lock in the team.
-
----
-
-## Design Pattern: Attribute Triggers Behavior
-
-This pattern permeates the entire system — both UI and business logic.
-
-### The Principle
-
-```
-If an attribute exists on the object → the corresponding behavior is activated
-```
-
-### In the UI system
-
-```typescript
-{ atom: "input", visible: () => showField, validate: (v) => v.length > 0 }
-//               ↑ attribute exists = behavior activated
-```
-
-### In business logic (same pattern)
-
-```typescript
-{ name: "Aged Brie", improveWithTime: { max: 50 }, expire: true }
-//                   ↑ attribute exists = behavior runs
-```
-
-### The Engine (identical structure)
-
-```typescript
-// UI: for each atom type, render the right component
-// Logic: for each attribute, run the corresponding behavior
-for (const [key, behavior] of Object.entries(behaviors)) {
-  if (key in item) behavior(item, item[key]);
-}
-```
-
-### Why this works
-
-| | UI | Business Logic |
-|---|---|---|
-| Trigger | `atom: "input"` | `degrade: true` |
-| Behavior | Renders component | Runs function |
-| Extension | New atom + interface | New attribute + behavior |
-| Composition | Sections with atoms | Items with behaviors |
-
-**Golden rule:** Data describes WHAT, the engine handles HOW.
 
 ---
 
