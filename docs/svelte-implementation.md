@@ -124,6 +124,8 @@ Melt UI (primitives) → Bits UI (headless) → shadcn-svelte (styled)
 - Easy to customize — it's just Tailwind classes
 - Theming built-in via CSS variables
 
+> **Note:** shadcn-svelte requires Tailwind CSS. This isn't a separate choice — when you choose shadcn, you choose Tailwind.
+
 ```bash
 # Setup
 npx shadcn-svelte@latest init
