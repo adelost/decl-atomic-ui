@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Outer circle / Background -->
+  <circle cx="50" cy="50" r="48" fill="white" stroke="#18181b" stroke-width="4"/>
+  
+  <!-- Black half (Yang side) - defining the shape manually for precision -->
+  <path d="M50,2 A48,48 0 0,1 50,98 A24,24 0 0,1 50,50 A24,24 0 0,0 50,2 Z" fill="#18181b"/>
+  
+  <!-- White dot in black half -->
+  <circle cx="50" cy="26" r="6" fill="white"/>
+  
+  <!-- Black dot in white half -->
+  <circle cx="50" cy="74" r="6" fill="#18181b"/>
+</svg>

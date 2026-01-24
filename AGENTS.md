@@ -119,6 +119,8 @@ interface ButtonAtom extends BaseAtom {
 
 ## Key Files
 
+- `CHEATSHEET.md` - Quick syntax reference (all valid discriminators, patterns, examples)
 - `README.md` - Framework-agnostic concept overview
 - `docs/svelte-implementation.md` - Full Svelte 5 implementation guide
+- `docs/component-catalog.md` - Extended components (Grid, Modal, Drawer, etc.)
 - `tooling/svelte/` - ESLint config, VS Code snippets

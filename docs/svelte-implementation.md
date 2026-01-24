@@ -1,4 +1,5 @@
-# Declarative UI System with Svelte + TypeScript
+# DAUI
+*Declarative Atomic UI — pages are data, not code*
 
 ## Vision
 
@@ -8,9 +9,27 @@ TypeScript interfaces provide full IDE support: autocomplete, error marking, ref
 
 ---
 
+
+## Philosophy & Influences
+
+**DAUI (Declarative Atomic UI)** is a synthesis of several robust software engineering paradigms:
+
+*   **[Atomic Design](https://atomicdesign.bradfrost.com):** Brad Frost's methodology for component hierarchy (Atoms, Molecules, Organisms).
+*   **Functional Composition:** Building complex UIs by composing simple, pure data functions.
+*   **Data-Driven Design:** The shape of the data determines the shape of the UI.
+*   **UI as Data:** Pages are plain objects, not component trees. The renderer interprets them.
+*   **ECS (Entity Component System):** Inspired by game engines, we separate Data (Page Objects) from Logic (Renderers).
+
+
+> **Language-agnostic:** While this reference implementation uses TypeScript, the DAUI concept applies to any language with structural typing or schemas (e.g., Python with Pydantic, Dart/Flutter, Rust). The core value is describing UI as data that a renderer interprets.
+
+> **Not a page builder, but could power one.** DAUI pages are typed data objects you write in your IDE—full autocomplete, type safety, and version control. But because pages are just data, a visual editor could be built on top, letting designers drag-drop atoms/molecules while developers work in code. Same format, different interfaces.
+
+---
+
 ## Core Pattern: Attribute Triggers Behavior
 
-This pattern permeates the entire system:both UI and business logic.
+This pattern permeates the entire system: both UI and business logic.
 
 ### The Principle
 
@@ -332,7 +351,7 @@ Is it a reusable group of atoms without own state?
   → No: Atom (Input, Button, Badge)
 ```
 
-**Gray zones:** When uncertain, ask "does it own state and flow?" If yes → organism. A Stepper with step validation and navigation owns flow, so it's an organism. A simple Card that just groups content is a molecule.
+**Gray zones:** When uncertain, ask "does it own async data or complex lifecycle?" If yes → organism. A Stepper with step validation is borderline—we define it as a molecule since the page provides step content and the stepper just manages which step is visible. A Table that fetches and paginates data is clearly an organism.
 
 ---
 
@@ -354,6 +373,9 @@ export type Atom =
   | TextAreaAtom
   | BadgeAtom
   | LabelAtom;
+  // + SwitchAtom, IconButtonAtom, SearchInputAtom, NumberInputAtom,
+  //   LinkAtom, DividerAtom, TextAtom, ImageAtom, AvatarAtom, ProgressAtom
+  //   - see component-catalog.md for full list
 
 /** Common properties for all atoms */
 interface BaseAtom {
@@ -373,7 +395,7 @@ export interface InputAtom extends FormAtom<string> {
   label?: string;
   required?: boolean;
   placeholder?: string;
-  type?: "text" | "email" | "password" | "number";
+  type?: "text" | "email" | "password";
 }
 
 export interface SelectAtom extends FormAtom<string> {
@@ -401,12 +423,22 @@ export interface RadioAtom extends FormAtom<string> {
 export interface ButtonAtom extends BaseAtom {
   atom: "button";
   text: string;
-  variant?: "primary" | "secondary" | "danger" | "link";
+  variant?: "primary" | "secondary" | "danger" | "ghost";
   submit?: boolean;
   disabled?: boolean | (() => boolean);
-  onClick?: () => void;
+  onClick?: () => void | Promise<void>;  // Promise = auto loading state
   confirm?: string; // "Are you sure?" -> shows dialog first
 }
+
+// Promise onClick behavior:
+// 1. While pending: button shows spinner + disabled (prevents double-click)
+// 2. On error: restore to normal, rethrow (caller handles toast)
+// 3. On success: restore to normal
+// Example:
+// onClick: async () => {
+//   await api.save(data);  // Button shows spinner automatically
+//   toast.success("Saved!");
+// }
 
 export interface UploadAtom extends FormAtom<File | File[] | null> {
   atom: "upload";
@@ -442,7 +474,7 @@ export interface TextAreaAtom extends FormAtom<string> {
 export interface BadgeAtom extends BaseAtom {
   atom: "badge";
   text: string | (() => string);
-  color: "green" | "yellow" | "red" | "blue" | "gray" | (() => "green" | "yellow" | "red" | "blue" | "gray");
+  color: "green" | "yellow" | "red" | "blue" | "gray" | "gold" | (() => "green" | "yellow" | "red" | "blue" | "gray" | "gold");
 }
 
 export interface LabelAtom extends BaseAtom {
@@ -460,13 +492,14 @@ export interface LabelAtom extends BaseAtom {
 export type Molecule =
   | FormMolecule<any>
   | ActionsMolecule
-  | CardMolecule
   | LabelValueMolecule;
+  // + GridMolecule, StackMolecule, TabsMolecule, etc. - see component-catalog.md
 
 export interface FormMolecule<T = Record<string, unknown>> {
   molecule: "form";
   id: string;
-  onSubmit: (values: T) => void;  // values object uses field.id as keys
+  onSubmit?: (values: T) => void;  // values object uses field.id as keys
+  action?: string;                  // SvelteKit form action, e.g. "?/updateMember"
   fields: Atom[];
 }
 // Note: Form collects values by field `id`. Example:
@@ -476,12 +509,6 @@ export interface FormMolecule<T = Record<string, unknown>> {
 export interface ActionsMolecule {
   molecule: "actions";
   items: ButtonAtom[];
-}
-
-export interface CardMolecule {
-  molecule: "card";
-  title?: string;
-  items: (Atom | Molecule)[];
 }
 
 export interface LabelValueMolecule {
@@ -498,27 +525,51 @@ export interface LabelValueMolecule {
 export type Organism =
   | TableOrganism<any>
   | SidebarOrganism;
+  // + ModalOrganism, DrawerOrganism, ListOrganism, CardOrganism,
+  //   HeaderOrganism, FooterOrganism - see component-catalog.md
 
 export interface TableOrganism<T = Record<string, unknown>> {
+  // See component-catalog.md for full definition (search, sort, actions, etc.)
   organism: "table";
   id: string;
   data: () => T[] | Promise<T[]>;
+  columns: TableColumn<T>[];
+
+  // Row interaction
+  onRowClick?: (row: T) => void;
+
+  // Search
   searchable?: boolean;
+  searchKeys?: (keyof T)[];
+  searchPlaceholder?: string;
+
+  // Sorting & pagination
   sortable?: boolean;
   paginated?: boolean;
-  columns: TableColumn<T>[];
-  onRowClick?: (row: T) => void;
+
+  // Empty state
+  emptyText?: string;
+
+  // Row actions (edit, delete buttons)
+  actions?: TableAction<T>[];
 }
 
 export interface TableColumn<T = Record<string, unknown>> {
   field: keyof T & string;
   header: string;
-  render?: "text" | "badge" | "actions" | "date";
-  colorMap?: Record<string, "green" | "yellow" | "red" | "blue">;
-  items?: ButtonAtom[] | ((row: T) => ButtonAtom[]);  // function receives row for context
+  sortable?: boolean;
+  width?: string;
+  // Custom rendering per column
+  render?: (value: unknown, row: T) => Section;
 }
-// Note: For row-specific actions, use function form:
-// items: (row) => [{ atom: "button", text: "Delete", onClick: () => deleteRow(row.id) }]
+
+export interface TableAction<T> {
+  icon: string;
+  label: string;  // for a11y
+  variant?: "default" | "danger";
+  onClick: (row: T) => void | Promise<void>;  // Promise = auto loading
+  visible?: (row: T) => boolean;
+}
 
 export interface SidebarOrganism {
   organism: "sidebar";
@@ -615,27 +666,24 @@ export const listSamples: Page = {
       sortable: true,
       onRowClick: (row) => router.push(`/sample/${row.id}`),
       columns: [
-        { field: "name", header: "Sample Name" },
+        { field: "name", header: "Sample Name", sortable: true },
         { field: "organism", header: "Organism" },
         {
           field: "status",
           header: "Status",
-          render: "badge",
-          colorMap: { Complete: "green", InProgress: "yellow", Error: "red" },
+          render: (val, row) => ({
+            atom: "badge",
+            text: val,
+            color: { Complete: "green", InProgress: "yellow", Error: "red" }[val] ?? "gray"
+          }),
         },
+      ],
+      actions: [
         {
-          field: "actions",
-          header: "",
-          render: "actions",
-          items: [
-            {
-              atom: "button",
-              text: "Delete",
-              variant: "danger",
-              onClick: sampleService.delete,
-              confirm: "Are you sure?",
-            },
-          ],
+          icon: "trash",
+          label: "Delete sample",
+          variant: "danger",
+          onClick: (row) => sampleService.delete(row.id),
         },
       ],
     },
@@ -655,9 +703,9 @@ export const inspectSample = (sample: Sample): Page => ({
   title: `Sample: ${sample.name}`,
   sections: [
     {
-      molecule: "card",
-      title: "Sample Details",
-      items: [
+      organism: "card",
+      header: { atom: "text", text: "Sample Details", variant: "heading" },
+      content: [
         {
           molecule: "label-value",
           items: [
@@ -1074,17 +1122,17 @@ The declarative pattern is efficient by default, but here are some gotchas to wa
 ### Table row actions
 
 ```typescript
-// ⚠️ Creates new array for each row on every render
-columns: [
-  { field: "id", header: "Actions", items: (row) => [
-    { atom: "button", text: "Edit", onClick: () => edit(row) }
-  ]}
-]
-
-// ✅ Better for large tables: memoize or define once
-const actionsFor = memoize((row) => [
-  { atom: "button", text: "Edit", onClick: () => edit(row) }
-]);
+// ✅ Use table-level actions[] - defined once, applied to all rows
+{
+  organism: "table",
+  data: () => items,
+  columns: [...],
+  actions: [
+    { icon: "edit", label: "Edit", onClick: (row) => edit(row) },
+    { icon: "trash", label: "Delete", variant: "danger", onClick: (row) => remove(row) }
+  ]
+}
+// The renderer handles showing these per row efficiently
 ```
 
 ### Promise data refetching
@@ -1246,35 +1294,41 @@ const agentTable: TableOrganism<Agent> = {
   paginated: true,
   onRowClick: (row) => router.push(`/agent/${row.id}`),
   columns: [
-    { field: "name", header: "Name" },
+    { field: "name", header: "Name", sortable: true },
     { field: "organism", header: "Organism" },
     { field: "resistance", header: "Resistance" },
     {
       field: "status",
       header: "Status",
-      render: "badge",
-      colorMap: { Active: "green", Archived: "gray", "Under Analysis": "yellow" },
+      render: (val) => ({
+        atom: "badge",
+        text: val,
+        color: { Active: "green", Archived: "gray", "Under Analysis": "yellow" }[val] ?? "gray"
+      }),
     },
-    { field: "registered", header: "Registered", render: "date" },
     {
-      field: "id",
-      header: "",
-      render: "actions",
-      items: [
-        {
-          atom: "button",
-          text: "Archive",
-          variant: "secondary",
-          confirm: "Do you want to archive this agent?",
-          visible: () => true, // can be conditioned per row in renderer
-        },
-        {
-          atom: "button",
-          text: "Delete",
-          variant: "danger",
-          confirm: "Are you sure? This cannot be undone.",
-        },
-      ],
+      field: "registered",
+      header: "Registered",
+      render: (val) => ({
+        atom: "text",
+        text: new Date(val).toLocaleDateString(),
+        variant: "muted"
+      }),
+    },
+  ],
+  actions: [
+    {
+      icon: "archive",
+      label: "Archive agent",
+      variant: "default",
+      onClick: (row) => agentService.archive(row.id),
+      visible: (row) => row.status === "Active",
+    },
+    {
+      icon: "trash",
+      label: "Delete agent",
+      variant: "danger",
+      onClick: (row) => agentService.delete(row.id),
     },
   ],
 };
@@ -1344,6 +1398,259 @@ The idea: make it *easier* to follow the pattern than to deviate from it, but do
 
 ---
 
+## Composition Principle (IMPORTANT)
+
+**Monolithic molecules are anti-pattern.** Instead of specialized components, compose generics.
+
+### ❌ WRONG: FormModal as monolith
+```typescript
+// Anti-pattern - duplicates logic if we want FormDrawer
+{
+  molecule: "form-modal",
+  title: "Edit Member",
+  fields: [...]
+}
+```
+
+### ✅ RIGHT: Modal + Form (composition)
+```typescript
+// Same form can be used in Modal, Drawer, or directly on page
+{
+  organism: "modal",
+  title: "Edit Member",
+  open: () => editModalOpen,
+  onClose: () => editModalOpen = false,
+  content: [
+    {
+      molecule: "form",
+      id: "edit-member",
+      onSubmit: handleSave,
+      fields: [
+        { atom: "input", id: "name", label: "Name", value: () => member.name },
+        { atom: "input", id: "email", label: "Email", value: () => member.email }
+      ]
+    }
+  ],
+  footer: [
+    { atom: "button", text: "Cancel", variant: "secondary", onClick: () => editModalOpen = false },
+    { atom: "button", text: "Save", variant: "primary", submit: true }
+  ]
+}
+```
+
+### ✅ RIGHT: ConfirmModal = Modal with specific content
+```typescript
+// Not a separate molecule - just Modal with confirmation content
+{
+  organism: "modal",
+  title: "Confirm Delete",
+  size: "sm",
+  open: () => confirmOpen,
+  onClose: () => confirmOpen = false,
+  content: [
+    { atom: "text", text: "Are you sure you want to delete this item?" }
+  ],
+  footer: [
+    { atom: "button", text: "Cancel", variant: "secondary", onClick: () => confirmOpen = false },
+    { atom: "button", text: "Delete", variant: "danger", onClick: handleDelete }
+  ]
+}
+```
+
+---
+
+## State Management Patterns
+
+### Cart Store with Svelte 5
+```typescript
+// stores/cart.svelte.ts
+class CartStore {
+  items = $state<CartItem[]>([]);
+  memberId = $state<string | null>(null);
+
+  total = $derived(this.items.reduce((sum, i) => sum + i.price * i.qty, 0));
+  count = $derived(this.items.reduce((sum, i) => sum + i.qty, 0));
+  isEmpty = $derived(this.items.length === 0);
+
+  add(product: Product) { /* ... */ }
+  remove(id: string) { /* ... */ }
+  clear() { this.items = []; this.memberId = null; }
+}
+export const cart = new CartStore();
+```
+
+### Undo with Countdown
+```typescript
+// stores/undo.ts
+const _expiry = writable(0);
+const _now = writable(Date.now());
+
+export const undoTimeLeft = derived([_expiry, _now], ([$exp, $now]) =>
+  Math.max(0, Math.ceil(($exp - $now) / 1000))
+);
+
+export const showUndo = derived(undoTimeLeft, $t => $t > 0);
+
+export const undoActions = {
+  set(expiryMs: number) { _expiry.set(expiryMs); startTimer(); },
+  clear() { _expiry.set(0); }
+};
+```
+
+### Session Cleanup
+```typescript
+// stores/session.ts
+export const session = {
+  cleanup() {
+    cart.clear();
+    undoActions.clear();
+    toastQueue.clear();
+  }
+};
+
+// Usage: beforeNavigate hook
+beforeNavigate(() => session.cleanup());
+```
+
+---
+
+## Effects Channel
+
+Visual effects (confetti, sound, haptics) do NOT belong in atoms/molecules.
+
+```typescript
+// WRONG: Effect in atom
+{ atom: "button", onClick: () => { confetti(); save(); } }  // Mixes concerns
+
+// RIGHT: Effect via service
+// services/effects.ts
+export const effects = {
+  confetti: () => { /* ... */ },
+  sound: (type: 'success' | 'error') => { /* ... */ },
+  haptic: () => { /* ... */ }
+};
+
+// Usage in page/service
+onClick: async () => {
+  await api.save(data);
+  effects.confetti();
+  effects.sound('success');
+}
+```
+
+**Principle:** Atoms are dumb. Effects are triggered by services/stores, not by UI components.
+
+---
+
+## Escape Hatches
+
+### Custom Cell Rendering
+For cells that need complex logic:
+```typescript
+columns: [
+  {
+    field: "status",
+    render: (val, row) => ({
+      atom: "badge",
+      text: val,
+      color: row.active ? "green" : "gray"
+    })
+  }
+]
+```
+
+### SvelteKit Form Actions
+FormMolecule supports SvelteKit actions:
+```typescript
+{
+  molecule: "form",
+  id: "update-member",
+  action: "?/updateMember",  // SvelteKit form action
+  fields: [...]
+}
+```
+
+### Things Outside Scope
+Some things cannot be declarative:
+- Physics/Canvas (Matter.js, WebGL)
+- Easter eggs (Konami code)
+- Complex animation orchestration
+- Charts (wrap Chart.js as ChartAtom)
+
+These are handled as regular Svelte components alongside the declarative system.
+
+---
+
+## Related Work
+
+DAUI builds on established ideas:
+
+- **[Atomic Design](https://atomicdesign.bradfrost.com)** — Brad Frost's component hierarchy. DAUI uses this as its structural foundation.
+- **JSON Schema Forms** — Data-driven forms (react-jsonschema-form, Formly). DAUI extends this concept to full pages with TypeScript interfaces instead of JSON Schema.
+- **Server-Driven UI (SDUI)** — Pattern used internally by Airbnb, Shopify, and others. Typically proprietary; DAUI offers an open, typed alternative.
+
+**What DAUI adds:** Atomic Design + TypeScript interfaces + full pages + IDE-first DX, as an open and documented pattern.
+
+---
+
 ## Further Reading
 
 The "attribute triggers behavior" pattern was first explored in [CodeKata-GildedRose-Redesign](https://github.com/Adelost/CodeKata-GildedRose-Redesign) (2014), a refactoring kata that replaced deeply nested if/else logic with data-driven composition. The same principle now drives this UI system.
+
+---
+
+## Server-Driven UI (SDUI)
+
+DAUI supports both code-first and server-driven modes using the `Intent` type.
+
+### The Intent Type
+
+```typescript
+// Already defined in types
+interface Intent {
+  action: string;
+  payload?: Record<string, unknown>;
+}
+
+type Callback = (() => void | Promise<void>) | Intent;
+```
+
+### Usage
+
+```typescript
+// Code-first (local development, full type safety):
+onClick: () => cart.add(product.id)
+
+// Server-driven (JSON from API):
+onClick: { action: "cart.add", payload: { productId: "123" } }
+```
+
+Both work with `ButtonAtom`, `IconButtonAtom`, etc.
+
+### Intent Registry
+
+For server-driven mode, create a registry that maps action strings to handlers:
+
+```typescript
+// services/intent-registry.ts
+const intentHandlers: Record<string, (payload: any) => void> = {
+  "cart.add": (p) => cart.add(p.productId),
+  "cart.remove": (p) => cart.remove(p.productId),
+  "navigate": (p) => goto(p.path),
+};
+
+export function handleIntent(intent: Intent) {
+  const handler = intentHandlers[intent.action];
+  if (handler) handler(intent.payload);
+  else console.warn(`Unknown intent: ${intent.action}`);
+}
+```
+
+### When to Use
+
+| Mode | When |
+|------|------|
+| **Code-first** | Local development, full IDE support, type safety |
+| **Server-driven** | CMS-managed pages, A/B testing, dynamic UI from backend |
+
+> **Note:** `TableAction` callbacks receive a `row` parameter, making them code-first only. For server-driven tables, generate row-specific intents on the server.

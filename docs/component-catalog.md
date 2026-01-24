@@ -13,20 +13,32 @@ This catalog extends the core components in [svelte-implementation.md](./svelte-
 ```typescript
 export interface GridMolecule {
   molecule: "grid";
-  columns?: number | { sm?: number; md?: number; lg?: number }; // responsive
+  columns?: number | ResponsiveColumns;
   gap?: "none" | "sm" | "md" | "lg";
+  padding?: "none" | "sm" | "md" | "lg";
   items: Section[];
+}
+
+// Responsive column notation
+export interface ResponsiveColumns {
+  default?: number;  // Fallback
+  sm?: number;       // >= 640px
+  md?: number;       // >= 768px
+  lg?: number;       // >= 1024px
+  xl?: number;       // >= 1280px
 }
 
 // Usage
 {
   molecule: "grid",
-  columns: { sm: 1, md: 2, lg: 3 },
+  columns: { default: 1, sm: 2, md: 3, lg: 4 },
   gap: "md",
+  padding: "lg",
   items: [
-    { molecule: "card", title: "Card 1", items: [...] },
-    { molecule: "card", title: "Card 2", items: [...] },
-    { molecule: "card", title: "Card 3", items: [...] },
+    { organism: "card", content: [...] },
+    { organism: "card", content: [...] },
+    { organism: "card", content: [...] },
+    { organism: "card", content: [...] },
   ]
 }
 ```
@@ -38,12 +50,14 @@ export interface StackMolecule {
   molecule: "stack";
   direction?: "horizontal" | "vertical";
   gap?: "none" | "sm" | "md" | "lg";
+  padding?: "none" | "sm" | "md" | "lg";
   align?: "start" | "center" | "end" | "stretch";
   justify?: "start" | "center" | "end" | "between" | "around";
+  wrap?: boolean;  // for flexbox wrap
   items: Section[];
 }
 
-// Usage
+// Usage: Action bar
 {
   molecule: "stack",
   direction: "horizontal",
@@ -54,7 +68,18 @@ export interface StackMolecule {
     { atom: "button", text: "Save", variant: "primary" },
   ]
 }
+
+// Usage: Tag cloud with wrap
+{
+  molecule: "stack",
+  direction: "horizontal",
+  gap: "sm",
+  wrap: true,
+  items: tags.map(tag => ({ atom: "badge", text: tag, color: "blue" })),
+}
 ```
+
+**Note:** We do NOT add `className` or `style` props. That would break the declarative principle. Instead, we extend with semantic props (padding, wrap, etc.).
 
 ### TabsMolecule
 
@@ -119,7 +144,7 @@ export interface TabItem {
 ### ModalOrganism
 
 ```typescript
-export interface ModalOrganism<T = void> {
+export interface ModalOrganism {
   organism: "modal";
   id: string;
   title: string;
@@ -333,6 +358,190 @@ export interface ProgressAtom extends BaseAtom {
 }
 ```
 
+### SwitchAtom
+
+Better than checkbox for on/off settings.
+
+```typescript
+export interface SwitchAtom extends FormAtom<boolean> {
+  atom: "switch";
+  id: string;
+  label?: string;
+}
+
+// Usage
+{
+  atom: "switch",
+  id: "dark-mode",
+  label: "Dark Mode",
+  value: () => settingsStore.darkMode,
+  onChange: (v) => settingsStore.darkMode = v,
+}
+```
+
+### IconButtonAtom
+
+For actions in tables (edit, delete) or compact action areas.
+
+```typescript
+export interface IconButtonAtom extends BaseAtom {
+  atom: "icon-button";
+  icon: string;
+  label: string; // for a11y (screen readers)
+  variant?: "default" | "danger" | "ghost";
+  onClick?: () => void | Promise<void>;  // Promise = auto loading state
+  disabled?: boolean | (() => boolean);
+}
+
+// Usage
+{
+  atom: "icon-button",
+  icon: "trash",
+  label: "Delete item",
+  variant: "danger",
+  onClick: async () => {
+    await api.deleteItem(item.id);
+    toast.success("Deleted!");
+  },
+}
+```
+
+### SearchInputAtom
+
+Search field with icon and clear button.
+
+```typescript
+export interface SearchInputAtom extends FormAtom<string> {
+  atom: "search-input";
+  id: string;
+  placeholder?: string;
+  onSearch?: (query: string) => void;  // debounced search trigger
+}
+
+// Usage
+{
+  atom: "search-input",
+  id: "member-search",
+  placeholder: "Search members...",
+  value: () => searchStore.query,
+  onChange: (v) => searchStore.query = v,
+  onSearch: (query) => memberStore.search(query),
+}
+```
+
+### NumberInputAtom
+
+For quantity, price, numeric values.
+
+```typescript
+export interface NumberInputAtom extends FormAtom<number> {
+  atom: "number-input";
+  id: string;
+  label?: string;
+  min?: number;
+  max?: number;
+  step?: number;
+}
+
+// Usage
+{
+  atom: "number-input",
+  id: "quantity",
+  label: "Quantity",
+  min: 1,
+  max: 100,
+  step: 1,
+  value: () => cartItem.quantity,
+  onChange: (v) => cart.updateQuantity(cartItem.id, v),
+}
+```
+
+### LinkAtom
+
+For navigation (vs Button for actions).
+
+```typescript
+export interface LinkAtom extends BaseAtom {
+  atom: "link";
+  text: string;
+  href: string;
+  variant?: "default" | "muted" | "back";
+}
+
+// Usage
+{
+  atom: "link",
+  text: "View all members",
+  href: "/members",
+  variant: "default",
+}
+```
+
+### DividerAtom
+
+Visual separator.
+
+```typescript
+export interface DividerAtom extends BaseAtom {
+  atom: "divider";
+  spacing?: "sm" | "md" | "lg";
+}
+
+// Usage
+{
+  atom: "divider",
+  spacing: "md",
+}
+```
+
+### TextAtom
+
+Typography with variants.
+
+```typescript
+export interface TextAtom extends BaseAtom {
+  atom: "text";
+  text: string | (() => string);
+  variant?: "default" | "muted" | "small" | "heading";
+}
+
+// Usage
+{
+  atom: "text",
+  text: () => `Welcome, ${userStore.name}!`,
+  variant: "heading",
+}
+```
+
+### ImageAtom
+
+For images in cards, avatars, etc.
+
+```typescript
+export interface ImageAtom extends BaseAtom {
+  atom: "image";
+  src: string | (() => string);
+  alt: string;
+  width?: number | string;
+  height?: number | string;
+  fallback?: string;  // Placeholder if image fails to load
+  objectFit?: "cover" | "contain" | "fill";
+  rounded?: boolean | "sm" | "md" | "lg" | "full";  // "full" = circle
+}
+
+// Usage
+{
+  atom: "image",
+  src: () => product.imageUrl,
+  alt: product.name,
+  width: 200,
+  height: 200,
+  fallback: "/placeholder.png",
+  objectFit: "cover",
+  rounded: "md",
+}
+```
+
 ### StepperMolecule
 
 ```typescript
@@ -388,6 +597,148 @@ export interface StepItem {
         ]},
       ],
     },
+  ]
+}
+```
+
+### SearchSelectMolecule
+
+Autocomplete for large lists (members, products).
+
+```typescript
+export interface SearchSelectMolecule extends FormAtom<string> {
+  molecule: "search-select";
+  id: string;
+  label?: string;
+  options: () => SearchSelectOption[] | Promise<SearchSelectOption[]>;
+  placeholder?: string;
+  onSearch?: (query: string) => void;  // for server-side filtering
+}
+
+export interface SearchSelectOption {
+  value: string;
+  label: string;
+  subtitle?: string;
+}
+
+// IMPORTANT: Lazy-loading behavior:
+// - options() is NOT called at render
+// - options() is called on focus OR first search
+// - If SearchSelect is in a table (50 rows), does NOT trigger 50 API calls
+// - Renderer should cache result after first call
+
+// Usage
+{
+  molecule: "search-select",
+  id: "member-select",
+  label: "Select Member",
+  placeholder: "Search members...",
+  options: () => memberService.search(searchQuery),
+  onSearch: (query) => searchQuery = query,
+  value: () => selectedMemberId,
+  onChange: (id) => selectedMemberId = id,
+}
+```
+
+### StatCardMolecule
+
+Dashboard metrics display.
+
+```typescript
+export interface StatCardMolecule {
+  molecule: "stat-card";
+  title: string;
+  value: string | number | (() => string | number);
+  change?: { value: number; label?: string };
+  icon?: string;
+}
+
+// Usage
+{
+  molecule: "stat-card",
+  title: "Total Sales",
+  value: () => `${salesStore.total} kr`,
+  change: { value: 12.5, label: "vs last month" },
+  icon: "trending-up",
+}
+```
+
+### TimelineMolecule
+
+Activity history display.
+
+```typescript
+export interface TimelineMolecule<T = unknown> {
+  molecule: "timeline";
+  id: string;
+  entries: () => TimelineEntry<T>[];
+}
+
+export interface TimelineEntry<T = unknown> {
+  timestamp: number;
+  title: string;
+  subtitle?: string;
+  icon?: string;
+  data?: T;
+}
+
+// Usage
+{
+  molecule: "timeline",
+  id: "activity-log",
+  entries: () => activityStore.entries.map(e => ({
+    timestamp: e.createdAt,
+    title: e.action,
+    subtitle: e.user.name,
+    icon: e.type === "purchase" ? "shopping-cart" : "edit",
+  })),
+}
+```
+
+### AlertPanelMolecule
+
+Inline notifications/alerts.
+
+```typescript
+export interface AlertPanelMolecule extends BaseAtom {
+  molecule: "alert-panel";
+  type: "info" | "success" | "warning" | "error";
+  message: string | (() => string);
+  dismissible?: boolean;
+  onDismiss?: () => void;
+}
+
+// Usage
+{
+  molecule: "alert-panel",
+  type: "warning",
+  message: "Your session will expire in 5 minutes.",
+  dismissible: true,
+  onDismiss: () => sessionWarningDismissed = true,
+  visible: () => showSessionWarning && !sessionWarningDismissed,
+}
+```
+
+### ContainerMolecule
+
+Content width constraint with padding.
+
+```typescript
+export interface ContainerMolecule {
+  molecule: "container";
+  maxWidth?: "sm" | "md" | "lg" | "xl" | "full";
+  padding?: "none" | "sm" | "md" | "lg";
+  items: Section[];
+}
+
+// Usage
+{
+  molecule: "container",
+  maxWidth: "lg",
+  padding: "md",
+  items: [
+    { atom: "text", text: "Page content", variant: "heading" },
+    { organism: "table", id: "data-table", ... },
   ]
 }
 ```
@@ -472,6 +823,198 @@ export interface FooterColumn {
 
 ---
 
+## Organisms (Extended)
+
+### ListOrganism
+
+Critical for leaderboards, member lists, activity feeds. Uses slots pattern.
+
+```typescript
+export interface ListOrganism<T = unknown> {
+  organism: "list";
+  id: string;
+  items: () => ListItem<T>[];
+  onItemClick?: (item: T) => void;
+  emptyText?: string;
+}
+
+export interface ListItem<T = unknown> {
+  key: string;
+  leading?: Section;   // Avatar, icon, rank badge
+  content: Section;    // Main content (text, title+subtitle)
+  trailing?: Section;  // Actions, badges, chevron
+  data?: T;            // Underlying data for onClick
+}
+
+// Usage: Leaderboard
+{
+  organism: "list",
+  id: "leaderboard",
+  items: () => topUsers.map((user, i) => ({
+    key: user.id,
+    leading: { atom: "badge", text: `${i + 1}`, color: i < 3 ? "gold" : "gray" },
+    content: {
+      molecule: "stack",
+      direction: "vertical",
+      gap: "none",
+      items: [
+        { atom: "text", text: user.name, variant: "default" },
+        { atom: "text", text: user.title, variant: "muted" }
+      ]
+    },
+    trailing: { atom: "text", text: `${user.points} pts` },
+    data: user
+  })),
+  onItemClick: (user) => goto(`/members/${user.id}`),
+  emptyText: "No members found",
+}
+```
+
+### CardOrganism
+
+Flexible container that replaces ProductCard, MemberCard, etc. through composition.
+
+```typescript
+export interface CardOrganism {
+  organism: "card";
+  id?: string;
+  header?: Section;    // Title, actions
+  media?: Section;     // Image, avatar
+  content: Section[];  // Main content
+  footer?: Section;    // Buttons, metadata
+  onClick?: () => void;
+  variant?: "default" | "outlined" | "elevated";
+}
+
+// Usage: ProductCard
+{
+  organism: "card",
+  media: { atom: "image", src: product.image, alt: product.name, objectFit: "cover" },
+  content: [
+    { atom: "text", text: product.name, variant: "heading" },
+    { atom: "text", text: `${product.price} kr`, variant: "default" }
+  ],
+  footer: {
+    atom: "button",
+    text: "Buy",
+    onClick: () => cart.add(product)
+  }
+}
+
+// Usage: MemberCard
+{
+  organism: "card",
+  header: {
+    molecule: "stack",
+    direction: "horizontal",
+    justify: "between",
+    items: [
+      { atom: "text", text: member.name, variant: "heading" },
+      { atom: "badge", text: member.role, color: "blue" }
+    ]
+  },
+  content: [
+    { atom: "avatar", src: member.avatar, size: "lg" },
+    { atom: "text", text: member.email, variant: "muted" }
+  ],
+  onClick: () => goto(`/members/${member.id}`),
+  variant: "outlined",
+}
+```
+
+### TableOrganism (Enhanced)
+
+Extended table with search, actions, and custom cell rendering.
+
+```typescript
+export interface TableOrganism<T = Record<string, unknown>> {
+  organism: "table";
+  id: string;
+  data: () => T[] | Promise<T[]>;
+  columns: TableColumn<T>[];
+
+  // Row interaction
+  onRowClick?: (row: T) => void;
+
+  // Search
+  searchable?: boolean;
+  searchKeys?: (keyof T)[];
+  searchPlaceholder?: string;
+
+  // Sorting & pagination
+  sortable?: boolean;
+  paginated?: boolean;
+
+  // Empty state
+  emptyText?: string;
+
+  // Row actions (edit, delete buttons)
+  actions?: TableAction<T>[];
+}
+
+export interface TableColumn<T> {
+  field: keyof T & string;
+  header: string;
+  sortable?: boolean;
+  width?: string;
+  // Custom rendering per column (single path, not two)
+  render?: (value: unknown, row: T) => Section;
+}
+
+export interface TableAction<T> {
+  icon: string;
+  label: string;  // for a11y
+  variant?: "default" | "danger";
+  onClick: (row: T) => void | Promise<void>;  // Promise = auto loading
+  visible?: (row: T) => boolean;
+}
+
+// Usage
+{
+  organism: "table",
+  id: "members-table",
+  data: () => memberService.list(),
+  searchable: true,
+  searchKeys: ["name", "email"],
+  searchPlaceholder: "Search members...",
+  emptyText: "No members found",
+  columns: [
+    { field: "name", header: "Name", sortable: true },
+    { field: "email", header: "Email" },
+    { field: "status", header: "Status", render: (val, row) => ({
+      atom: "badge",
+      text: val,
+      color: row.active ? "green" : "gray"
+    })},
+    { field: "joined", header: "Joined", render: (val) => ({
+      atom: "text",
+      text: new Date(val).toLocaleDateString(),
+      variant: "muted"
+    })}
+  ],
+  actions: [
+    {
+      icon: "edit",
+      label: "Edit member",
+      onClick: (row) => openEditModal(row),
+    },
+    {
+      icon: "trash",
+      label: "Delete member",
+      variant: "danger",
+      onClick: async (row) => {
+        await memberService.delete(row.id);
+        toast.success("Member deleted");
+      },
+      visible: (row) => row.role !== "admin",
+    }
+  ],
+  onRowClick: (row) => goto(`/members/${row.id}`),
+}
+```
+
+---
+
 ## Adding New Components
 
 When adding a new component, follow this pattern:
@@ -493,3 +1036,54 @@ export interface NewAtom extends FormAtom<string> {
 // Add to union
 export type Atom = InputAtom | ButtonAtom | ... | NewAtom;
 ```
+
+---
+
+## Common Patterns
+
+### Pattern: Searchable List
+
+To make a list searchable, compose a `SearchInputAtom` with a filtered `ListOrganism` using a reactive store. Don't look for a `searchable` prop on the list itself—that's intentional.
+
+**Why no built-in search?** Lists have free-form content (leading/content/trailing slots), making it unclear what to search on. Instead, you control the filtering logic explicitly.
+
+```typescript
+// 1. State & Logic (in your page/store)
+const query = writable("");
+const allUsers = [...];
+
+const filteredUsers = derived(query, ($q) =>
+  allUsers
+    .filter(u => u.name.toLowerCase().includes($q.toLowerCase()))
+    .map(u => ({
+      key: u.id,
+      content: { atom: "text", text: u.name },
+      trailing: { atom: "badge", text: u.role, color: "blue" },
+      data: u
+    }))
+);
+
+// 2. UI Definition
+{
+  molecule: "stack",
+  direction: "vertical",
+  gap: "md",
+  items: [
+    {
+      atom: "search-input",
+      id: "user-search",
+      placeholder: "Search users...",
+      onSearch: (v) => query.set(v)
+    },
+    {
+      organism: "list",
+      id: "user-list",
+      items: () => get(filteredUsers),
+      emptyText: "No users found",
+      onItemClick: (user) => goto(`/users/${user.id}`)
+    }
+  ]
+}
+```
+
+**Note:** `TableOrganism` has built-in `searchable` because tables have standardized layouts with toolbars. Lists are more free-form, so filtering is left to the developer.
