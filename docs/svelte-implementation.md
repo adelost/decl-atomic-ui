@@ -46,6 +46,36 @@ src/
 
 ---
 
+## Atom vs Molecule vs Organism
+
+How do you know which level a component belongs to? Use this quick test:
+
+| Level | Definition | Quick Test |
+|-------|------------|------------|
+| **Atom** | Primitive UI element | Renders one thing (input, button, label) |
+| **Molecule** | Composed UI without own data | Groups atoms, no data fetching or async |
+| **Organism** | Owns data/state/flow | Has pagination, sorting, async data, or orchestrates multiple parts |
+
+**Decision flow:**
+
+```
+Does it have `data: () => Promise<T[]>` or own data lifecycle?
+  → Yes: Organism (Table, Sidebar)
+  → No: Continue...
+
+Does it handle routing, wizard steps, or complex state?
+  → Yes: Organism (Stepper, Modal with form)
+  → No: Continue...
+
+Is it a reusable group of atoms without own state?
+  → Yes: Molecule (Form, Card, Actions)
+  → No: Atom (Input, Button, Badge)
+```
+
+**Gray zones:** When uncertain, ask "does it own state and flow?" If yes → organism. A Stepper with step validation and navigation owns flow, so it's an organism. A simple Card that just groups content is a molecule.
+
+---
+
 ## Interfaces (the types that control everything)
 
 ### Atoms
