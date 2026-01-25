@@ -26,8 +26,8 @@
     showValue = false,
   }: Props = $props();
 
-  // Initialize with external value
-  let currentValue = $state(value?.() ?? min);
+  // Initialize with external value (untrack to avoid reactivity warning)
+  let currentValue = $state(untrack(() => value?.() ?? min));
 
   // Sync external value changes without fighting local drag state
   $effect(() => {

@@ -14,7 +14,7 @@
     advanced: { text: '⭐⭐⭐ Advanced', color: 'red' as const },
   };
 
-  const header: StackMolecule = {
+  const header: StackMolecule = $derived({
     molecule: 'stack',
     direction: 'vertical',
     gap: 'sm',
@@ -67,7 +67,7 @@
         ],
       },
     ],
-  };
+  });
 </script>
 
 <div class="demo-header-wrapper">
