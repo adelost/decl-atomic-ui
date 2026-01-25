@@ -1,5 +1,5 @@
 # DAUI
-*Declarative Atomic UI — pages are data, not code*
+*Declarative Atomic UI - pages are data, not code*
 
 ## Vision
 
@@ -77,7 +77,10 @@ for (const [key, behavior] of Object.entries(behaviors)) {
 ## Principles
 
 1. **Pages = data.** A page file is just a typed object, no logic.
-2. **Atomic Design.** Atoms, molecules, organisms. Nothing else exists.
+2. **Atomic Design.**
+   - **Atoms** - Single elements. (Button, Icon, Input)
+   - **Molecules** - Display patterns. No internal state. (Stack, Form, Card, Tabs)
+   - **Organisms** - Own internal state or complex behavior. (Table, Modal)
 3. **No specialized code.** If a component isn't reusable, it's not an atom.
 4. **New page = new object, zero new code** (if existing building blocks suffice).
 5. **Callbacks = real function references.** IDE can navigate directly to them.
@@ -338,20 +341,17 @@ How do you know which level a component belongs to? Use this quick test:
 **Decision flow:**
 
 ```
-Does it have `data: () => Promise<T[]>` or own data lifecycle?
-  → Yes: Organism (Table, Sidebar)
-  → No: Continue...
+Is it a single element with no children?
+  → Atom (Button, Icon, Input)
 
-Does it handle routing, wizard steps, or complex state?
-  → Yes: Organism (Stepper, Modal with form)
-  → No: Continue...
+Does it own internal state or complex behavior?
+  → Organism (Table with sort/filter, Modal with focus trap)
 
-Is it a reusable group of atoms without own state?
-  → Yes: Molecule (Form, Card, Actions)
-  → No: Atom (Input, Button, Badge)
+Does it just display what you give it?
+  → Molecule (Stack, Form, Card, Tabs)
 ```
 
-**Gray zones:** When uncertain, ask "does it own async data or complex lifecycle?" If yes → organism. A Stepper with step validation is borderline—we define it as a molecule since the page provides step content and the stepper just manages which step is visible. A Table that fetches and paginates data is clearly an organism.
+**The key distinction:** Does the component own internal state? If yes → Organism. If it just displays → Molecule.
 
 ---
 
@@ -1585,9 +1585,9 @@ These are handled as regular Svelte components alongside the declarative system.
 
 DAUI builds on established ideas:
 
-- **[Atomic Design](https://atomicdesign.bradfrost.com)** — Brad Frost's component hierarchy. DAUI uses this as its structural foundation.
-- **JSON Schema Forms** — Data-driven forms (react-jsonschema-form, Formly). DAUI extends this concept to full pages with TypeScript interfaces instead of JSON Schema.
-- **Server-Driven UI (SDUI)** — Pattern used internally by Airbnb, Shopify, and others. Typically proprietary; DAUI offers an open, typed alternative.
+- **[Atomic Design](https://atomicdesign.bradfrost.com)** - Brad Frost's component hierarchy. DAUI uses this as its structural foundation.
+- **JSON Schema Forms** - Data-driven forms (react-jsonschema-form, Formly). DAUI extends this concept to full pages with TypeScript interfaces instead of JSON Schema.
+- **Server-Driven UI (SDUI)** - Pattern used internally by Airbnb, Shopify, and others. Typically proprietary; DAUI offers an open, typed alternative.
 
 **What DAUI adds:** Atomic Design + TypeScript interfaces + full pages + IDE-first DX, as an open and documented pattern.
 

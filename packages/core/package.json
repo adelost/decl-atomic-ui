@@ -1,0 +1,16 @@
+{
+  "name": "@daui/core",
+  "version": "0.1.0",
+  "description": "Declarative Atomic UI - Core types and utilities",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": ["src"],
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.4.0"
+  }
+}

@@ -831,7 +831,7 @@ Critical for leaderboards, member lists, activity feeds. Uses slots pattern.
 
 ```typescript
 export interface ListOrganism<T = unknown> {
-  organism: "list";
+  molecule: "list";
   id: string;
   items: () => ListItem<T>[];
   onItemClick?: (item: T) => void;
@@ -848,7 +848,7 @@ export interface ListItem<T = unknown> {
 
 // Usage: Leaderboard
 {
-  organism: "list",
+  molecule: "list",
   id: "leaderboard",
   items: () => topUsers.map((user, i) => ({
     key: user.id,
@@ -1015,6 +1015,456 @@ export interface TableAction<T> {
 
 ---
 
+## Inputs (Extended)
+
+### SliderAtom
+
+For range selection (volume, brightness, etc.).
+
+```typescript
+export interface SliderAtom extends FormAtom<number> {
+  atom: "slider";
+  id: string;
+  label?: string;
+  min?: number;
+  max?: number;
+  step?: number;
+  showValue?: boolean;
+  marks?: SliderMark[];
+}
+
+export interface SliderMark {
+  value: number;
+  label?: string;
+}
+
+// Usage
+{
+  atom: "slider",
+  id: "volume",
+  label: "Volume",
+  min: 0,
+  max: 100,
+  step: 1,
+  showValue: true,
+  value: () => audioStore.volume,
+  onChange: (v) => audioStore.volume = v,
+}
+
+// With marks
+{
+  atom: "slider",
+  id: "temperature",
+  label: "Temperature",
+  min: 0,
+  max: 100,
+  marks: [
+    { value: 0, label: "Cold" },
+    { value: 50, label: "Warm" },
+    { value: 100, label: "Hot" },
+  ],
+  value: () => settings.temp,
+  onChange: (v) => settings.temp = v,
+}
+```
+
+### ComboboxMolecule
+
+Enhanced select with search, multi-select, and create options.
+
+```typescript
+export interface ComboboxMolecule extends FormAtom<string | string[]> {
+  molecule: "combobox";
+  id: string;
+  label?: string;
+  placeholder?: string;
+  options: SelectOption[] | (() => SelectOption[] | Promise<SelectOption[]>);
+  multiple?: boolean;
+  searchable?: boolean;
+  creatable?: boolean; // allow creating new options
+  onSearch?: (query: string) => void;
+}
+
+// Usage: Simple combobox
+{
+  molecule: "combobox",
+  id: "country",
+  label: "Country",
+  placeholder: "Select a country...",
+  options: countries,
+  searchable: true,
+  value: () => formStore.country,
+  onChange: (v) => formStore.country = v,
+}
+
+// Usage: Multi-select tags
+{
+  molecule: "combobox",
+  id: "tags",
+  label: "Tags",
+  placeholder: "Add tags...",
+  options: () => tagService.search(query),
+  multiple: true,
+  searchable: true,
+  creatable: true,
+  onSearch: (q) => query = q,
+  value: () => formStore.tags,
+  onChange: (v) => formStore.tags = v,
+}
+```
+
+---
+
+## Feedback
+
+### SkeletonAtom
+
+Loading placeholder to prevent layout shift.
+
+```typescript
+export interface SkeletonAtom extends BaseAtom {
+  atom: "skeleton";
+  variant?: "text" | "circular" | "rectangular";
+  width?: number | string;
+  height?: number | string;
+  lines?: number; // for text variant
+}
+
+// Usage: Avatar placeholder
+{
+  atom: "skeleton",
+  variant: "circular",
+  width: 48,
+  height: 48,
+}
+
+// Usage: Text placeholder
+{
+  atom: "skeleton",
+  variant: "text",
+  lines: 3,
+  width: "100%",
+}
+
+// Usage: Card placeholder
+{
+  atom: "skeleton",
+  variant: "rectangular",
+  width: "100%",
+  height: 200,
+}
+```
+
+### TooltipMolecule
+
+Hover tooltip for any element.
+
+```typescript
+export interface TooltipMolecule {
+  molecule: "tooltip";
+  content: string;
+  trigger: Section;
+  position?: "top" | "bottom" | "left" | "right";
+  delay?: number; // ms before showing
+}
+
+// Usage
+{
+  molecule: "tooltip",
+  content: "Delete this item permanently",
+  position: "top",
+  trigger: {
+    atom: "icon-button",
+    icon: "trash",
+    label: "Delete",
+    variant: "danger",
+    onClick: handleDelete,
+  }
+}
+```
+
+### AlertDialogMolecule
+
+Confirmation dialog for destructive actions. Simpler than Modal for yes/no decisions.
+
+```typescript
+export interface AlertDialogMolecule {
+  molecule: "alert-dialog";
+  id: string;
+  title: string;
+  description?: string;
+  open: () => boolean;
+  onOpenChange: (open: boolean) => void;
+  cancelText?: string;
+  confirmText?: string;
+  onCancel?: () => void;
+  onConfirm?: () => void;
+  variant?: "default" | "danger";
+}
+
+// Usage
+{
+  molecule: "alert-dialog",
+  id: "confirm-delete",
+  title: "Delete project?",
+  description: "This action cannot be undone. All data will be permanently removed.",
+  open: () => showDeleteDialog,
+  onOpenChange: (open) => showDeleteDialog = open,
+  cancelText: "Cancel",
+  confirmText: "Delete",
+  variant: "danger",
+  onCancel: () => showDeleteDialog = false,
+  onConfirm: async () => {
+    await projectService.delete(projectId);
+    showDeleteDialog = false;
+  },
+}
+```
+
+---
+
+## Disclosure
+
+### AccordionMolecule
+
+Collapsible sections for FAQ, settings, etc.
+
+```typescript
+export interface AccordionMolecule {
+  molecule: "accordion";
+  id: string;
+  items: AccordionItem[];
+  type?: "single" | "multiple"; // single = only one open at a time
+  defaultOpen?: string[]; // item ids
+}
+
+export interface AccordionItem {
+  id: string;
+  title: string;
+  content: Section[];
+  disabled?: boolean;
+}
+
+// Usage: FAQ
+{
+  molecule: "accordion",
+  id: "faq",
+  type: "single",
+  items: [
+    {
+      id: "q1",
+      title: "What is DAUI?",
+      content: [
+        { atom: "text", text: "DAUI is a declarative UI pattern where pages are defined as data, not code." }
+      ]
+    },
+    {
+      id: "q2",
+      title: "How do I add new components?",
+      content: [
+        { atom: "text", text: "Define a TypeScript interface, add to the union type, then implement the renderer." }
+      ]
+    },
+  ]
+}
+
+// Usage: Settings with multiple open
+{
+  molecule: "accordion",
+  id: "settings",
+  type: "multiple",
+  defaultOpen: ["appearance"],
+  items: [
+    {
+      id: "appearance",
+      title: "Appearance",
+      content: [
+        { atom: "switch", id: "dark-mode", label: "Dark Mode", ... },
+        { atom: "select", id: "theme", label: "Theme", ... },
+      ]
+    },
+    {
+      id: "notifications",
+      title: "Notifications",
+      content: [
+        { atom: "switch", id: "email", label: "Email notifications", ... },
+      ]
+    },
+  ]
+}
+```
+
+### PopoverMolecule
+
+Content popup anchored to a trigger element.
+
+```typescript
+export interface PopoverMolecule {
+  molecule: "popover";
+  id: string;
+  trigger: Section;
+  content: Section[];
+  position?: "top" | "bottom" | "left" | "right";
+  open?: () => boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
+// Usage: User card popover
+{
+  molecule: "popover",
+  id: "user-popover",
+  position: "bottom",
+  trigger: {
+    atom: "avatar",
+    src: () => user.avatar,
+    fallback: "JD",
+    size: "sm",
+  },
+  content: [
+    { atom: "text", text: user.name, variant: "heading" },
+    { atom: "text", text: user.email, variant: "muted" },
+    { atom: "divider", spacing: "sm" },
+    { atom: "button", text: "View Profile", variant: "secondary", onClick: viewProfile },
+  ]
+}
+```
+
+---
+
+## Menus
+
+### ContextMenuMolecule
+
+Right-click menu for table rows, cards, etc.
+
+```typescript
+export interface ContextMenuMolecule {
+  molecule: "context-menu";
+  id: string;
+  trigger: Section;
+  items: MenuItem[]; // reuses MenuItem from MenuMolecule
+}
+
+// Usage: Table row with context menu
+{
+  molecule: "context-menu",
+  id: "row-actions",
+  trigger: {
+    molecule: "stack",
+    direction: "horizontal",
+    items: [
+      { atom: "text", text: row.name },
+      { atom: "text", text: row.email, variant: "muted" },
+    ]
+  },
+  items: [
+    { label: "Edit", icon: "edit", onClick: () => editRow(row) },
+    { label: "Duplicate", icon: "copy", onClick: () => duplicateRow(row) },
+    { divider: true },
+    { label: "Delete", icon: "trash", onClick: () => deleteRow(row) },
+  ]
+}
+```
+
+### CommandOrganism
+
+Command palette for keyboard-driven navigation (Cmd+K style).
+
+```typescript
+export interface CommandOrganism {
+  organism: "command";
+  id: string;
+  open: () => boolean;
+  onOpenChange: (open: boolean) => void;
+  placeholder?: string;
+  groups: CommandGroup[];
+  onSelect?: (value: string) => void;
+  emptyText?: string;
+}
+
+export interface CommandGroup {
+  label?: string;
+  items: CommandItem[];
+}
+
+export interface CommandItem {
+  value: string;
+  label: string;
+  icon?: string;
+  shortcut?: string;
+  disabled?: boolean;
+  onSelect?: () => void;
+}
+
+// Usage
+{
+  organism: "command",
+  id: "command-palette",
+  open: () => commandOpen,
+  onOpenChange: (open) => commandOpen = open,
+  placeholder: "Type a command or search...",
+  emptyText: "No results found",
+  groups: [
+    {
+      label: "Navigation",
+      items: [
+        { value: "home", label: "Go to Home", icon: "home", shortcut: "G H", onSelect: () => goto("/") },
+        { value: "settings", label: "Go to Settings", icon: "cog", shortcut: "G S", onSelect: () => goto("/settings") },
+      ]
+    },
+    {
+      label: "Actions",
+      items: [
+        { value: "new-project", label: "Create Project", icon: "plus", shortcut: "C P", onSelect: openNewProject },
+        { value: "search", label: "Search", icon: "search", shortcut: "/", onSelect: focusSearch },
+      ]
+    }
+  ]
+}
+```
+
+---
+
+## Containers
+
+### ScrollAreaMolecule
+
+Custom scrollbar container for consistent cross-browser styling.
+
+```typescript
+export interface ScrollAreaMolecule {
+  molecule: "scroll-area";
+  maxHeight?: number | string;
+  maxWidth?: number | string;
+  content: Section[];
+}
+
+// Usage: Scrollable sidebar
+{
+  molecule: "scroll-area",
+  maxHeight: "calc(100vh - 64px)",
+  content: [
+    { molecule: "list", id: "nav-items", items: () => navItems, ... }
+  ]
+}
+
+// Usage: Horizontal scroll
+{
+  molecule: "scroll-area",
+  maxWidth: "100%",
+  content: [
+    {
+      molecule: "stack",
+      direction: "horizontal",
+      gap: "md",
+      items: images.map(img => ({ atom: "image", src: img.url, ... }))
+    }
+  ]
+}
+```
+
+---
+
 ## Adding New Components
 
 When adding a new component, follow this pattern:
@@ -1076,7 +1526,7 @@ const filteredUsers = derived(query, ($q) =>
       onSearch: (v) => query.set(v)
     },
     {
-      organism: "list",
+      molecule: "list",
       id: "user-list",
       items: () => get(filteredUsers),
       emptyText: "No users found",

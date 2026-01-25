@@ -1,0 +1,138 @@
+{
+  "name": "svelte-daui",
+  "version": "0.1.0",
+  "description": "Declarative Atomic UI - Svelte components",
+  "type": "module",
+  "svelte": "./src/index.ts",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "svelte": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./core": {
+      "svelte": "./src/core.ts",
+      "default": "./src/core.ts"
+    },
+    "./media": {
+      "svelte": "./src/media.ts",
+      "default": "./src/media.ts"
+    },
+    "./full": {
+      "svelte": "./src/full.ts",
+      "default": "./src/full.ts"
+    },
+    "./presets": {
+      "svelte": "./src/presets/index.ts",
+      "default": "./src/presets/index.ts"
+    },
+    "./integrations": {
+      "svelte": "./src/integrations/index.ts",
+      "default": "./src/integrations/index.ts"
+    },
+    "./integrations/motion-canvas": {
+      "svelte": "./src/integrations/motion-canvas.ts",
+      "default": "./src/integrations/motion-canvas.ts"
+    },
+    "./integrations/three": {
+      "svelte": "./src/integrations/three.ts",
+      "default": "./src/integrations/three.ts"
+    },
+    "./integrations/matter": {
+      "svelte": "./src/integrations/matter.ts",
+      "default": "./src/integrations/matter.ts"
+    },
+    "./integrations/shiki": {
+      "svelte": "./src/integrations/shiki.ts",
+      "default": "./src/integrations/shiki.ts"
+    },
+    "./integrations/codemirror": {
+      "svelte": "./src/integrations/codemirror.ts",
+      "default": "./src/integrations/codemirror.ts"
+    }
+  },
+  "peerDependencies": {
+    "@codemirror/lang-javascript": ">=6.0.0",
+    "@codemirror/lang-json": ">=6.0.0",
+    "@codemirror/lang-markdown": ">=6.0.0",
+    "@codemirror/lang-python": ">=6.0.0",
+    "@codemirror/lang-yaml": ">=6.0.0",
+    "@codemirror/state": ">=6.0.0",
+    "@codemirror/view": ">=6.0.0",
+    "@motion-canvas/core": "^3.0.0",
+    "matter-js": ">=0.19.0",
+    "shiki": ">=1.0.0",
+    "svelte": "^5.0.0",
+    "three": ">=0.150.0"
+  },
+  "peerDependenciesMeta": {
+    "@codemirror/lang-javascript": {
+      "optional": true
+    },
+    "@codemirror/lang-json": {
+      "optional": true
+    },
+    "@codemirror/lang-markdown": {
+      "optional": true
+    },
+    "@codemirror/lang-python": {
+      "optional": true
+    },
+    "@codemirror/lang-yaml": {
+      "optional": true
+    },
+    "@codemirror/state": {
+      "optional": true
+    },
+    "@codemirror/view": {
+      "optional": true
+    },
+    "@motion-canvas/core": {
+      "optional": true
+    },
+    "three": {
+      "optional": true
+    },
+    "matter-js": {
+      "optional": true
+    },
+    "shiki": {
+      "optional": true
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@daui/core": "workspace:*",
+    "@lucide/svelte": "^0.563.1",
+    "bits-ui": "^2.15.4",
+    "d3-scale": "^4.0.2",
+    "d3-shape": "^3.2.0",
+    "date-fns": "^4.1.0",
+    "layerchart": "^1.0.13",
+    "tailwind-variants": "^3.2.2"
+  },
+  "devDependencies": {
+    "@codemirror/autocomplete": "^6.20.0",
+    "@codemirror/commands": "^6.10.1",
+    "@codemirror/lang-javascript": "^6.2.4",
+    "@codemirror/lang-json": "^6.0.2",
+    "@codemirror/lang-markdown": "^6.5.0",
+    "@codemirror/lang-python": "^6.2.1",
+    "@codemirror/lang-yaml": "^6.1.2",
+    "@codemirror/language": "^6.12.1",
+    "@codemirror/lint": "^6.9.2",
+    "@codemirror/search": "^6.6.0",
+    "@codemirror/state": "^6.5.4",
+    "@codemirror/view": "^6.39.11",
+    "@types/d3-scale": "^4.0.9",
+    "@types/d3-shape": "^3.1.8",
+    "@types/matter-js": "^0.20.2",
+    "@types/three": "^0.182.0",
+    "matter-js": "^0.20.0",
+    "shiki": "^3.21.0",
+    "three": "^0.182.0"
+  }
+}

@@ -11,13 +11,17 @@ Quick reference for declarative-ui syntax. Full docs: [svelte-implementation.md]
 ```
 ATOMS:     input, select, radio, button, upload, checkbox, date, textarea,
            badge, label, switch, icon-button, search-input, number-input,
-           link, divider, text, image, avatar, progress, toast
+           link, divider, text, image, avatar, progress, toast, chart,
+           icon, spinner, slider, skeleton
 
 MOLECULES: form, actions, label-value, grid, stack, tabs, menu,
            breadcrumbs, pagination, search-select, stat-card,
-           timeline, alert-panel, container, stepper
+           timeline, alert-panel, container, stepper, tooltip,
+           popover, accordion, alert-dialog, combobox, context-menu,
+           scroll-area
 
-ORGANISMS: table, sidebar, modal, drawer, list, card, header, footer
+ORGANISMS: table, sidebar, modal, drawer, list, card, header, footer,
+           command, tree-view
 ```
 
 ---
@@ -43,84 +47,83 @@ onClick: async () => { await api.save(); }
 
 ## Examples
 
-### Atoms
+### Atoms - Single elements
 
 ```typescript
-{ atom: "input", id: "name", label: "Name", value: () => hobbit.name, onChange: (v) => hobbit.name = v }
+{ atom: "input", id: "name", label: "Name", value: () => user.name, onChange: (v) => user.name = v }
 
-{ atom: "button", text: "Join Fellowship", variant: "primary", onClick: () => fellowshipService.join() }
+{ atom: "button", text: "Save", variant: "primary", onClick: () => projectService.save() }
 
-{ atom: "select", id: "race", label: "Race", options: [
-  { value: "hobbit", label: "Hobbit" },
-  { value: "dwarf", label: "Dwarf" },
-  { value: "elf", label: "Elf" },
-  { value: "wizard", label: "Wizard" },
+{ atom: "select", id: "role", label: "Role", options: [
+  { value: "admin", label: "Admin" },
+  { value: "editor", label: "Editor" },
+  { value: "viewer", label: "Viewer" },
 ]}
 
-{ atom: "checkbox", id: "hasRing", label: "Carries the One Ring", value: () => member.hasRing, onChange: (v) => member.hasRing = v }
+{ atom: "checkbox", id: "notify", label: "Send email notifications", value: () => prefs.notify, onChange: (v) => prefs.notify = v }
 
-{ atom: "badge", text: "Ring-bearer", color: "gold" }
+{ atom: "badge", text: "Pro", color: "gold" }
 ```
 
-### Molecules
+### Molecules - Display patterns, no internal state (`items`, `fields`, `tabs`)
 
 ```typescript
-// Fellowship registration form
+// User registration form
 {
   molecule: "form",
-  id: "join-fellowship",
+  id: "create-user",
   fields: [
     { atom: "input", id: "name", label: "Name", required: true },
-    { atom: "select", id: "race", label: "Race", options: races },
-    { atom: "input", id: "homeland", label: "Homeland", placeholder: "The Shire, Rivendell, Moria..." },
+    { atom: "input", id: "email", label: "Email", type: "email", required: true },
+    { atom: "select", id: "role", label: "Role", options: roles },
   ],
-  onSubmit: (values) => fellowshipService.recruit(values)
+  onSubmit: (values) => userService.create(values)
 }
 
 // Action buttons
 {
   molecule: "actions",
   items: [
-    { atom: "button", text: "Flee to Rivendell", variant: "secondary", onClick: () => router.push("/rivendell") },
-    { atom: "button", text: "Destroy the Ring", variant: "danger", onClick: mountDoom.cast },
+    { atom: "button", text: "Cancel", variant: "secondary", onClick: () => router.back() },
+    { atom: "button", text: "Create user", variant: "primary", submit: true },
   ]
 }
 ```
 
-### Organisms
+### Organisms - Own internal state or complex behavior (`content`)
 
 ```typescript
-// Fellowship leaderboard
+// Team members table
 {
   organism: "table",
-  id: "fellowship-members",
-  data: () => fellowshipService.getMembers(),
+  id: "team-members",
+  data: () => teamService.getMembers(),
   columns: [
     { field: "name", header: "Name", sortable: true },
-    { field: "race", header: "Race" },
-    { field: "kills", header: "Orc Kills", sortable: true },
+    { field: "role", header: "Role" },
+    { field: "contributions", header: "Contributions", sortable: true },
     { field: "status", header: "Status", render: (val) => ({
       atom: "badge",
       text: val,
-      color: { Alive: "green", Fallen: "gray", Corrupted: "red" }[val]
+      color: { Active: "green", Away: "yellow", Legendary: "gold" }[val]
     })},
   ],
-  onRowClick: (member) => router.push(`/fellowship/${member.id}`)
+  onRowClick: (member) => router.push(`/team/${member.id}`)
 }
 
 // Confirmation modal
 {
   organism: "modal",
-  id: "destroy-ring",
-  title: "Cast into Mount Doom?",
+  id: "confirm-delete",
+  title: "Delete project?",
   open: () => showConfirm,
   onClose: () => showConfirm = false,
   content: [
-    { atom: "text", text: "The Ring will be destroyed forever. This cannot be undone." }
+    { atom: "text", text: "This action cannot be undone. The project and all its data will be permanently removed." }
   ],
   footer: [
-    { atom: "button", text: "Keep it secret", variant: "secondary", onClick: () => showConfirm = false },
-    { atom: "button", text: "Cast it into the fire!", variant: "danger", onClick: destroyRing },
+    { atom: "button", text: "Cancel", variant: "secondary", onClick: () => showConfirm = false },
+    { atom: "button", text: "Delete", variant: "danger", onClick: handleDelete },
   ]
 }
 ```
@@ -128,38 +131,39 @@ onClick: async () => { await api.save(); }
 ### Leaderboard with List
 
 ```typescript
+// Example data: Ada Lovelace, Grace Hopper, Linus Torvalds, Margaret Hamilton
 {
-  organism: "list",
-  id: "fellowship-rankings",
+  molecule: "list",
+  id: "top-contributors",
   items: () => [
     { key: "1", leading: { atom: "badge", text: "#1", color: "gold" },
       content: { molecule: "stack", direction: "vertical", gap: "none", items: [
-        { atom: "text", text: "Legolas", variant: "default" },
-        { atom: "text", text: "Mirkwood", variant: "muted" }
+        { atom: "text", text: "Ada Lovelace", variant: "default" },
+        { atom: "text", text: "Algorithms", variant: "muted" }
       ]},
-      trailing: { atom: "text", text: "42 kills" }},
+      trailing: { atom: "text", text: "1842 pts" }},
     { key: "2", leading: { atom: "badge", text: "#2", color: "gray" },
       content: { molecule: "stack", direction: "vertical", gap: "none", items: [
-        { atom: "text", text: "Gimli", variant: "default" },
-        { atom: "text", text: "Erebor", variant: "muted" }
+        { atom: "text", text: "Grace Hopper", variant: "default" },
+        { atom: "text", text: "Compilers", variant: "muted" }
       ]},
-      trailing: { atom: "text", text: "41 kills" }},
+      trailing: { atom: "text", text: "1952 pts" }},
   ],
-  emptyText: "No fellowship members yet"
+  emptyText: "No contributors yet"
 }
 ```
 
 ### Page
 
 ```typescript
-const questPage: Page = {
-  layout: "centered",
-  title: "The Fellowship of the Ring",
+const teamPage: Page = {
+  layout: "full",
+  title: "Team",
   sections: [
-    { atom: "text", text: "One does not simply walk into Mordor.", variant: "muted" },
-    { organism: "table", id: "fellowship", ... },
+    { atom: "text", text: "Manage your team members and their roles.", variant: "muted" },
+    { organism: "table", id: "team-members", ... },
     { molecule: "actions", items: [
-      { atom: "button", text: "Begin Quest", variant: "primary", onClick: quest.begin }
+      { atom: "button", text: "Invite member", variant: "primary", onClick: openInviteModal }
     ]},
   ]
 }
