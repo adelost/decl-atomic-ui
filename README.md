@@ -3,7 +3,7 @@
 A framework-agnostic pattern for building UIs where **pages are data, not code**.
 Components that just work. Focus on your app, not UI bugs.
 
-**[Live Demo](https://adelost.github.io/declarative-ui/)** · [Documentation](docs/svelte-implementation.md)
+**[Live Demo](https://adelost.github.io/declarative-atomic-ui/)** · [Documentation](docs/svelte-implementation.md)
 
 ## Core Concept
 
