@@ -12,6 +12,12 @@ let radioValue = 'option1';
 let accordionValue = '';
 let secretUnlocked = false;
 
+// Video demo state
+let videoTime = 0;
+let videoPlaying = false;
+let timelineZoom = 1;
+let selectedSegments = new Set<string>();
+
 function onSecretCode() {
   secretUnlocked = true;
   emit('secretCode');
@@ -769,9 +775,16 @@ export const componentsPage = {
                   description: 'HTML5 video with overlay support for annotations',
                   layout: 'stacked',
                   component: {
-                    atom: 'text',
-                    variant: 'muted',
-                    text: 'VideoPlayer requires a video source. See Media examples for full demo.',
+                    organism: 'video-player',
+                    id: 'demo-video',
+                    src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+                    poster: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Big_Buck_Bunny_thumbnail_vlc.png/320px-Big_Buck_Bunny_thumbnail_vlc.png',
+                    currentTime: () => videoTime,
+                    onTimeUpdate: (t: number) => (videoTime = t),
+                    playing: () => videoPlaying,
+                    onPlayPause: (p: boolean) => (videoPlaying = p),
+                    aspectRatio: '16/9',
+                    controls: true,
                   },
                 },
 
@@ -781,9 +794,52 @@ export const componentsPage = {
                   description: 'Multi-track timeline editor for video editing',
                   layout: 'stacked',
                   component: {
-                    atom: 'text',
-                    variant: 'muted',
-                    text: 'VideoTimeline is a complex component for video editing workflows. See Media examples for full demo.',
+                    organism: 'video-timeline',
+                    id: 'demo-timeline',
+                    duration: () => 60,
+                    currentTime: () => videoTime,
+                    onSeek: (t: number) => (videoTime = t),
+                    zoom: () => timelineZoom,
+                    onZoomChange: (z: number) => (timelineZoom = z),
+                    selectedIds: () => selectedSegments,
+                    onSelectionChange: (ids: Set<string>) => (selectedSegments = ids),
+                    height: 150,
+                    tracks: [
+                      {
+                        id: 'video',
+                        label: 'Video',
+                        type: 'segments',
+                        icon: 'video',
+                        color: 'hsl(220, 70%, 50%)',
+                        data: () => [
+                          { id: 'v1', start: 0, end: 20, label: 'Intro' },
+                          { id: 'v2', start: 22, end: 45, label: 'Main' },
+                          { id: 'v3', start: 47, end: 60, label: 'Outro' },
+                        ],
+                      },
+                      {
+                        id: 'audio',
+                        label: 'Audio',
+                        type: 'segments',
+                        icon: 'music',
+                        color: 'hsl(150, 60%, 45%)',
+                        data: () => [
+                          { id: 'a1', start: 0, end: 60, label: 'Background Music' },
+                        ],
+                      },
+                      {
+                        id: 'markers',
+                        label: 'Markers',
+                        type: 'markers',
+                        icon: 'flag',
+                        color: 'hsl(45, 90%, 50%)',
+                        data: () => [
+                          { id: 'm1', start: 10, label: 'Cut' },
+                          { id: 'm2', start: 30, label: 'Transition' },
+                          { id: 'm3', start: 50, label: 'Fade' },
+                        ],
+                      },
+                    ],
                   },
                 },
               ],
