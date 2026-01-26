@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { PageRenderer, EffectOverlay, SectionRenderer, type DropdownMenuMolecule } from 'svelte-daui';
+  import { PageRenderer, EffectOverlay, SectionRenderer, type DropdownMenuMolecule, type StackMolecule } from 'svelte-daui';
   import MotionCanvasTest from './MotionCanvasTest.svelte';
   import DemoHeader from './DemoHeader.svelte';
   import { componentsPage } from './pages/components';
@@ -61,7 +61,7 @@
     align: 'start',
   };
 
-  const navBar = $derived({
+  const navBar: StackMolecule = $derived({
     molecule: 'stack',
     direction: 'horizontal',
     justify: 'between',
@@ -90,7 +90,7 @@
         ],
       },
     ],
-  } as const);
+  });
 </script>
 
 <nav class="page-nav">
