@@ -19,6 +19,7 @@ import Popover from '../atoms/Popover.svelte';
 import Progress from '../atoms/Progress.svelte';
 import RadioGroup from '../atoms/RadioGroup.svelte';
 import Select from '../atoms/Select.svelte';
+import Skeleton from '../atoms/Skeleton.svelte';
 import Slider from '../atoms/Slider.svelte';
 import Spinner from '../atoms/Spinner.svelte';
 import Switch from '../atoms/Switch.svelte';
@@ -58,6 +59,7 @@ export const core: Preset = {
     progress: Progress,
     'radio-group': RadioGroup,
     select: Select,
+    skeleton: Skeleton,
     slider: Slider,
     spinner: Spinner,
     switch: Switch,

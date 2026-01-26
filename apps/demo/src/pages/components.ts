@@ -188,6 +188,21 @@ export const componentsPage = {
                   ],
                 },
 
+                // Skeleton
+                {
+                  molecule: 'showcase',
+                  title: 'Skeleton',
+                  description: 'Placeholder loading states',
+                  layout: 'side-by-side',
+                  previewAlign: 'stretch',
+                  variants: [
+                    { label: 'Text', component: { atom: 'skeleton', variant: 'text', width: '100%' } },
+                    { label: 'Multi-line', component: { atom: 'skeleton', variant: 'text', lines: 3 } },
+                    { label: 'Circular', component: { atom: 'skeleton', variant: 'circular', width: 48, height: 48 } },
+                    { label: 'Rectangular', component: { atom: 'skeleton', variant: 'rectangular', width: '100%', height: 120 } },
+                  ],
+                },
+
                 // Input
                 {
                   molecule: 'showcase',
