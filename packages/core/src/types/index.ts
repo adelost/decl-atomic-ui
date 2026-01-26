@@ -10,6 +10,9 @@
 // Re-export action types
 export * from './action';
 
+// Import action types for use within this file
+import type { ActionDef } from './action';
+
 // ============================================
 // BASE INTERFACES
 // ============================================
