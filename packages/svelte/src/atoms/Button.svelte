@@ -1,14 +1,39 @@
 <script lang="ts">
   import type { ButtonAtom } from '@daui/core';
   import { tv } from 'tailwind-variants';
+  import { createButtonActionHandler } from '../engine/actionHandler';
 
-  let { text, variant = 'primary', disabled, onClick, submit }: Omit<ButtonAtom, 'atom'> = $props();
+  // Destructure with rename to avoid $ prefix in local variable
+  let {
+    text,
+    variant = 'primary',
+    disabled,
+    onClick,
+    submit,
+    $action: actionDef,
+  }: Omit<ButtonAtom, 'atom'> = $props();
 
   let resolvedText = $derived(typeof text === 'function' ? text() : text);
   let resolvedVariant = $derived(typeof variant === 'function' ? variant() : variant);
   let isDisabled = $derived(typeof disabled === 'function' ? disabled() : !!disabled);
 
+  // Track loading state for $action buttons
+  let isLoading = $state(false);
+
   async function handleClick() {
+    // If $action is defined, use declarative action handler
+    if (actionDef) {
+      isLoading = true;
+      try {
+        const handler = createButtonActionHandler(actionDef);
+        await handler();
+      } finally {
+        isLoading = false;
+      }
+      return;
+    }
+
+    // Otherwise use traditional onClick callback
     if (typeof onClick === 'function') {
       await onClick();
     } else if (onClick) {
@@ -44,8 +69,30 @@
 <button
   class={buttonVariants({ variant: resolvedVariant })}
   type={submit ? 'submit' : 'button'}
-  disabled={isDisabled}
+  disabled={isDisabled || isLoading}
   onclick={handleClick}
 >
+  {#if isLoading}
+    <span class="loading-spinner"></span>
+  {/if}
   {resolvedText}
 </button>
+
+<style>
+  .loading-spinner {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    margin-right: 0.5em;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>

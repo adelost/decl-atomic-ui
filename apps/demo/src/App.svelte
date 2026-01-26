@@ -10,10 +10,11 @@
   import { occultPage } from './pages/examples/occult';
   import { missionPage } from './pages/examples/mission';
   import { codePage } from './pages/examples/code.svelte';
+  import { chatPage } from './pages/examples/chat';
   import { demoMetas } from './types/demo-meta';
   import './app.css';
 
-  type PageType = 'components' | 'dashboard' | 'cryptodex' | 'skydive' | 'synthesizer' | 'occult' | 'mission' | 'code' | 'motion';
+  type PageType = 'components' | 'dashboard' | 'cryptodex' | 'skydive' | 'synthesizer' | 'occult' | 'mission' | 'code' | 'chat' | 'motion';
 
   let currentPage = $state<PageType>('components');
 
@@ -26,6 +27,7 @@
     occult: occultPage,
     mission: missionPage,
     code: codePage,
+    chat: chatPage,
   };
 
   const examples: { id: PageType; label: string }[] = [
@@ -36,6 +38,7 @@
     { id: 'occult', label: 'Occult Archive' },
     { id: 'mission', label: 'Mission Control' },
     { id: 'code', label: 'Code Components' },
+    { id: 'chat', label: 'Chat' },
   ];
 
   function isExample(page: PageType): boolean {

@@ -7,6 +7,9 @@
  * @see docs/svelte-implementation.md for full documentation
  */
 
+// Re-export action types
+export * from './action';
+
 // ============================================
 // BASE INTERFACES
 // ============================================
@@ -92,6 +95,8 @@ export interface ButtonAtom extends BaseAtom {
   disabled?: boolean | (() => boolean);
   onClick?: Callback;
   confirm?: string;
+  /** Declarative action with automatic side effects */
+  $action?: ActionDef;
 }
 
 export interface UploadAtom extends FormAtom<File | File[] | null> {
@@ -324,6 +329,35 @@ export interface RadioGroupOption {
 }
 
 // ============================================
+// CHAT ATOMS
+// ============================================
+
+/** Author information for chat messages */
+export interface ChatAuthor {
+  id?: string;
+  name: string;
+  avatar?: string;
+}
+
+/** Single chat message bubble */
+export interface ChatBubbleAtom extends BaseAtom {
+  atom: 'chat-bubble';
+  content: string | (() => string);
+  author: ChatAuthor;
+  timestamp?: number | (() => number);
+  variant?: 'user' | 'assistant' | 'system';
+  status?: 'sending' | 'sent' | 'delivered' | 'read' | 'error';
+  replyTo?: { author: string; content: string };
+}
+
+/** Animated typing indicator (three dots) */
+export interface TypingIndicatorAtom extends BaseAtom {
+  atom: 'typing-indicator';
+  author?: ChatAuthor;
+  size?: 'sm' | 'md' | 'lg';
+}
+
+// ============================================
 // VIDEO EDITOR ATOMS
 // ============================================
 
@@ -473,6 +507,9 @@ export type Atom =
   | TooltipAtom
   | PopoverAtom
   | RadioGroupAtom
+  // Chat Atoms
+  | ChatBubbleAtom
+  | TypingIndicatorAtom
   // Video Editor Atoms
   | PlayheadAtom
   | TrackSegmentAtom
@@ -496,6 +533,8 @@ export interface FormMolecule<T = Record<string, unknown>> extends BaseAtom {
   onSubmit?: (values: T) => unknown;
   action?: string;
   fields: Section[];
+  /** Declarative action with automatic side effects */
+  $action?: ActionDef;
 }
 
 export interface ActionsMolecule extends BaseAtom {
@@ -781,6 +820,58 @@ export interface FilterBarFilter {
 }
 
 // ============================================
+// CHAT MOLECULES
+// ============================================
+
+/** Chat message data structure */
+export interface ChatMessage {
+  id: string;
+  content: string;
+  author: ChatAuthor;
+  timestamp: number;
+  variant?: 'user' | 'assistant' | 'system';
+  status?: 'sending' | 'sent' | 'delivered' | 'read' | 'error';
+  replyTo?: { author: string; content: string };
+}
+
+/** Text input with send button for chat */
+export interface ChatInputMolecule extends BaseAtom {
+  molecule: 'chat-input';
+  id?: string;
+  placeholder?: string;
+  disabled?: boolean | (() => boolean);
+  onSend: (message: string) => unknown;
+  onTyping?: (isTyping: boolean) => unknown;
+  maxLength?: number;
+  showCharCount?: boolean;
+}
+
+/** Header bar for chat panel */
+export interface ChatHeaderMolecule extends BaseAtom {
+  molecule: 'chat-header';
+  title: string | (() => string);
+  subtitle?: string | (() => string);
+  avatar?: ChatAuthor;
+  status?: 'online' | 'offline' | 'typing' | (() => 'online' | 'offline' | 'typing');
+  actions?: Section[];
+  onClose?: () => unknown;
+  onMinimize?: () => unknown;
+}
+
+/** Scrollable list of chat messages with auto-scroll */
+export interface ChatMessagesListMolecule extends BaseAtom {
+  molecule: 'chat-messages-list';
+  id?: string;
+  messages: () => ChatMessage[] | Promise<ChatMessage[]>;
+  currentUserId?: string;
+  showTimestamps?: boolean;
+  groupByDate?: boolean;
+  typingIndicator?: ChatAuthor | (() => ChatAuthor | null);
+  onMessageClick?: (message: ChatMessage) => unknown;
+  emptyText?: string;
+}
+
+// ============================================
 // VIDEO EDITOR MOLECULES
 // ============================================
 
@@ -912,6 +1003,10 @@ export type Molecule =
   | ScrollAreaMolecule
   | PageHeaderMolecule
   | FilterBarMolecule
+  // Chat Molecules
+  | ChatInputMolecule
+  | ChatHeaderMolecule
+  | ChatMessagesListMolecule
   // Video Editor Molecules
   | TrackMolecule
   | FrameControlsMolecule
@@ -1129,6 +1224,95 @@ export interface TreeViewNode {
 }
 
 // ============================================
+// CHAT ORGANISMS
+// ============================================
+
+/** Complete chat panel with header, messages, and input */
+export interface ChatPanelOrganism extends BaseAtom {
+  organism: 'chat-panel';
+  id: string;
+
+  // Header
+  title?: string | (() => string);
+  subtitle?: string | (() => string);
+  avatar?: ChatAuthor;
+  status?: 'online' | 'offline' | 'typing' | (() => 'online' | 'offline' | 'typing');
+  showHeader?: boolean;
+
+  // Messages
+  messages: () => ChatMessage[] | Promise<ChatMessage[]>;
+  currentUserId?: string;
+  showTimestamps?: boolean;
+  groupByDate?: boolean;
+  typingIndicator?: ChatAuthor | (() => ChatAuthor | null);
+  emptyText?: string;
+
+  // Input
+  placeholder?: string;
+  onSend: (message: string) => unknown;
+  onTyping?: (isTyping: boolean) => unknown;
+  inputDisabled?: boolean | (() => boolean);
+
+  // Actions
+  onClose?: () => unknown;
+  onMinimize?: () => unknown;
+  headerActions?: Section[];
+
+  // Styling
+  height?: number | string;
+  maxHeight?: number | string;
+  variant?: 'default' | 'floating' | 'embedded';
+}
+
+// ============================================
+// SLIDE MODAL ORGANISM
+// ============================================
+
+/** Theme for slide modal items */
+export type SlideTheme = 'default' | 'gold' | 'cyan' | 'green' | 'purple';
+
+/** Individual slide item in a slide modal */
+export interface SlideItem {
+  id: string;
+  header?: string;
+  icon?: string;
+  title: string;
+  subtitle?: string;
+  content?: Section[];
+  badge?: string;
+  theme?: SlideTheme;
+}
+
+/** Multi-slide modal with queue navigation */
+export interface SlideModalOrganism extends BaseAtom {
+  organism: 'slide-modal';
+  id: string;
+  open: () => boolean;
+  onClose: () => unknown;
+
+  // Slides
+  slides: SlideItem[] | (() => SlideItem[]);
+  currentIndex?: () => number;
+  onIndexChange?: (index: number) => unknown;
+
+  // Navigation
+  showDots?: boolean;
+  showArrows?: boolean;
+  nextText?: string;
+  prevText?: string;
+  closeText?: string;
+  allowBackdropClose?: boolean;
+
+  // Callbacks
+  onSlideChange?: (slide: SlideItem, index: number) => unknown;
+  onComplete?: () => unknown;
+
+  // Styling
+  size?: 'sm' | 'md' | 'lg';
+  variant?: 'default' | 'celebration' | 'onboarding';
+}
+
+// ============================================
 // VIDEO EDITOR ORGANISMS
 // ============================================
 
@@ -1262,6 +1446,10 @@ export type Organism =
   | CommandOrganism
   | TreeViewOrganism
   | AlertDialogOrganism
+  // Chat Organisms
+  | ChatPanelOrganism
+  // Slide Modal
+  | SlideModalOrganism
   // Video Editor Organisms
   | VideoTimelineOrganism
   | VideoPlayerOrganism;

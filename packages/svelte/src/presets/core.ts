@@ -42,6 +42,7 @@ import Tabs from '../molecules/Tabs.svelte';
 import AlertDialog from '../organisms/AlertDialog.svelte';
 import Card from '../organisms/Card.svelte';
 import Modal from '../organisms/Modal.svelte';
+import SlideModal from '../organisms/SlideModal.svelte';
 
 export const core: Preset = {
   atoms: {
@@ -82,5 +83,6 @@ export const core: Preset = {
     'alert-dialog': AlertDialog,
     card: Card,
     modal: Modal,
+    'slide-modal': SlideModal,
   },
 };
