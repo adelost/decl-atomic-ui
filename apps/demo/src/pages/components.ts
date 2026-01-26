@@ -32,13 +32,26 @@ let filterRole = 'all';
 // TagCloud demo state
 let activeTag = '';
 
-// TreeView demo state
+// TreeView demo state - branching skill tree
 let treeNodeStatus: Record<string, 'locked' | 'available' | 'completed'> = {
-  'intro': 'completed',
-  'basics': 'completed',
-  'advanced': 'available',
-  'expert': 'locked',
-  'master': 'locked',
+  'fundamentals': 'completed',
+  'frontend': 'available',
+  'backend': 'available',
+  'react': 'locked',
+  'svelte': 'locked',
+  'nodejs': 'locked',
+  'nextjs': 'locked',
+  'express': 'locked',
+  'fastify': 'locked',
+};
+
+// Define which nodes unlock which
+const treeUnlocks: Record<string, string[]> = {
+  'fundamentals': ['frontend', 'backend'],
+  'frontend': ['react', 'svelte'],
+  'backend': ['nodejs'],
+  'react': ['nextjs'],
+  'nodejs': ['express', 'fastify'],
 };
 
 function onSecretCode() {
@@ -845,24 +858,31 @@ export const componentsPage = {
                   component: {
                     organism: 'tree-view',
                     id: 'demo-tree',
-                    nodeSize: 'md',
+                    nodeSize: 'sm',
                     nodes: [
-                      { id: 'intro', title: 'Introduction', description: 'Get started', icon: 'play', status: () => treeNodeStatus['intro'] },
-                      { id: 'basics', title: 'Basics', description: 'Core concepts', icon: 'book', parent: 'intro', status: () => treeNodeStatus['basics'] },
-                      { id: 'advanced', title: 'Advanced', description: 'Deep dive', icon: 'rocket', parent: 'basics', status: () => treeNodeStatus['advanced'] },
-                      { id: 'expert', title: 'Expert', description: 'Master level', icon: 'award', parent: 'advanced', status: () => treeNodeStatus['expert'] },
-                      { id: 'master', title: 'Master', description: 'Complete mastery', icon: 'crown', parent: 'expert', status: () => treeNodeStatus['master'] },
+                      // Root
+                      { id: 'fundamentals', title: 'Fundamentals', description: 'Web basics', icon: 'globe', status: () => treeNodeStatus['fundamentals'] },
+                      // Level 1 - Two branches
+                      { id: 'frontend', title: 'Frontend', description: 'UI development', icon: 'layout', parent: 'fundamentals', status: () => treeNodeStatus['frontend'] },
+                      { id: 'backend', title: 'Backend', description: 'Server & APIs', icon: 'server', parent: 'fundamentals', status: () => treeNodeStatus['backend'] },
+                      // Frontend branch
+                      { id: 'react', title: 'React', description: 'Component library', icon: 'atom', parent: 'frontend', status: () => treeNodeStatus['react'] },
+                      { id: 'svelte', title: 'Svelte', description: 'Compiler framework', icon: 'zap', parent: 'frontend', status: () => treeNodeStatus['svelte'] },
+                      { id: 'nextjs', title: 'Next.js', description: 'React framework', icon: 'triangle', parent: 'react', status: () => treeNodeStatus['nextjs'] },
+                      // Backend branch
+                      { id: 'nodejs', title: 'Node.js', description: 'JS runtime', icon: 'hexagon', parent: 'backend', status: () => treeNodeStatus['nodejs'] },
+                      { id: 'express', title: 'Express', description: 'Web framework', icon: 'route', parent: 'nodejs', status: () => treeNodeStatus['express'] },
+                      { id: 'fastify', title: 'Fastify', description: 'Fast framework', icon: 'rocket', parent: 'nodejs', status: () => treeNodeStatus['fastify'] },
                     ],
                     onNodeClick: (node: { id: string }) => {
                       const current = treeNodeStatus[node.id];
                       if (current === 'available') {
                         treeNodeStatus[node.id] = 'completed';
-                        // Unlock next node
-                        const order = ['intro', 'basics', 'advanced', 'expert', 'master'];
-                        const idx = order.indexOf(node.id);
-                        if (idx < order.length - 1) {
-                          treeNodeStatus[order[idx + 1]] = 'available';
-                        }
+                        // Unlock child nodes
+                        const unlocks = treeUnlocks[node.id] || [];
+                        unlocks.forEach(childId => {
+                          treeNodeStatus[childId] = 'available';
+                        });
                         treeNodeStatus = { ...treeNodeStatus };
                       }
                     },
