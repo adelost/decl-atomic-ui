@@ -18,6 +18,9 @@ let videoPlaying = false;
 let timelineZoom = 1;
 let selectedSegments = new Set<string>();
 
+// Number input demo state
+let numberValue = 5;
+
 function onSecretCode() {
   secretUnlocked = true;
   emit('secretCode');
@@ -175,6 +178,36 @@ export const componentsPage = {
                         { molecule: 'stack', items: [{ atom: 'input', id: 'demo-text', label: 'Text' }, { atom: 'text', text: 'Default', variant: 'small' }] },
                         { molecule: 'stack', items: [{ atom: 'input', id: 'demo-pw', label: 'Password', type: 'password', placeholder: '••••••••' }, { atom: 'text', text: 'type: "password"', variant: 'small' }] },
                         { molecule: 'stack', items: [{ atom: 'input', id: 'demo-req', label: 'Required', required: true }, { atom: 'text', text: 'required: true', variant: 'small' }] },
+                      ],
+                    },
+                  ],
+                },
+
+                // Number Input
+                {
+                  molecule: 'showcase',
+                  title: 'Number Input',
+                  description: 'Numeric input with min/max/step validation',
+                  layout: 'side-by-side',
+                  previewAlign: 'stretch',
+                  component: {
+                    atom: 'number-input',
+                    id: 'quantity',
+                    label: 'Quantity',
+                    min: 0,
+                    max: 100,
+                    step: 1,
+                    value: () => numberValue,
+                    onChange: (v: number) => (numberValue = v),
+                  },
+                  children: [
+                    {
+                      molecule: 'stack',
+                      direction: 'horizontal',
+                      gap: 'lg',
+                      items: [
+                        { molecule: 'stack', items: [{ atom: 'number-input', id: 'demo-decimal', label: 'Decimal', step: 0.1, min: 0, max: 10 }, { atom: 'text', text: 'step: 0.1', variant: 'small' }] },
+                        { molecule: 'stack', items: [{ atom: 'number-input', id: 'demo-range', label: 'Limited Range', min: 1, max: 5 }, { atom: 'text', text: 'min: 1, max: 5', variant: 'small' }] },
                       ],
                     },
                   ],
