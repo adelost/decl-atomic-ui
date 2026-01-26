@@ -1,8 +1,15 @@
 # Component Catalog (Extended)
 
-This catalog extends the core components in [svelte-implementation.md](./svelte-implementation.md) with additional building blocks for common UI patterns.
+This catalog provides detailed documentation for components. For a quick reference of all available components, see [CHEATSHEET.md](../CHEATSHEET.md).
 
-**Status:** Work in Progress - add components as needed.
+> **Note:** This document may be partially outdated. The CHEATSHEET.md has the authoritative list of all 70 components (35 atoms, 24 molecules, 11 organisms).
+
+**Current components include:**
+- **Chat:** chat-bubble, chat-input, chat-header, chat-messages-list, chat-panel
+- **Media:** video-player, video-timeline, track, playhead, track-segment, track-marker
+- **Celebration:** slide-modal (achievements, onboarding, tutorials)
+- **Data:** table, tree-view, filter-bar, search-select, stat-card, tag-cloud
+- **Layout:** stack, grid, tabs, accordion, card, modal
 
 ---
 

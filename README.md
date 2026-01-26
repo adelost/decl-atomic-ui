@@ -135,6 +135,52 @@ export default {
 
 Components are built on [bits-ui](https://bits-ui.com) (Radix primitives) for keyboard navigation and screen reader support.
 
+## Declarative Actions ($action)
+
+Eliminate callback boilerplate with declarative side effects:
+
+```typescript
+{
+  molecule: "form",
+  id: "create-user",
+  $action: {
+    endpoint: "?/createUser",
+    onSuccess: [
+      { $event: "toast", text: "User created!" },
+      { $event: "close-modal" },
+      { $event: "invalidate" }
+    ]
+  },
+  fields: [
+    { atom: "input", id: "name", label: "Name" },
+    { atom: "button", text: "Save", submit: true }
+  ]
+}
+```
+
+Available effects: `toast`, `close-modal`, `invalidate`, `redirect`, `emit` (escape hatch)
+
+## Presets
+
+Choose a preset based on your needs:
+
+```typescript
+import { PageRenderer, standard } from 'svelte-daui';
+
+// Available presets:
+// core     - Minimal (~25 components): buttons, inputs, modals
+// standard - Recommended: core + tables + charts + tree-view
+// full     - Everything: standard + chat + media
+// chat     - Chat components: bubbles, input, panel
+// media    - Video editing: player, timeline, tracks
+```
+
+| Preset | Atoms | Molecules | Organisms | Use case |
+|--------|-------|-----------|-----------|----------|
+| `core` | 24 | 13 | 6 | Minimal bundle |
+| `standard` | 25 | 17 | 8 | Most apps |
+| `full` | 35 | 24 | 11 | Demos, prototypes |
+
 ## Principles
 
 1. **Pages = data.** A page file is a typed object, no logic.
@@ -166,27 +212,30 @@ This pattern applies to both UI and business logic:
 ## Project Structure (Monorepo)
 
 ```
-declarative-ui/
+declarative-atomic-ui/
 ├── packages/
 │   ├── core/                 ← @daui/core
 │   │   └── src/
 │   │       ├── types/        ← All interfaces (framework-agnostic)
-│   │       ├── registry.ts   ← Component override system
-│   │       └── utils.ts      ← cn() utility
+│   │       └── index.ts      ← Registry, utilities
 │   │
 │   └── svelte/               ← svelte-daui
 │       └── src/
-│           ├── atoms/        ← Input, Button, Select, ...
-│           ├── molecules/    ← Form, Grid, Card, ...
-│           ├── organisms/    ← Table, Modal, ...
-│           └── renderer/     ← PageRenderer, SectionRenderer
+│           ├── atoms/        ← Input, Button, Toast, ... (35)
+│           ├── molecules/    ← Form, Stack, Pagination, ... (24)
+│           ├── organisms/    ← Table, Modal, Sidebar, ... (11)
+│           ├── engine/       ← $action, $async, effects
+│           ├── effects/      ← ToastProvider, EffectOverlay
+│           ├── renderer/     ← PageRenderer, SectionRenderer
+│           └── presets/      ← core, standard, full, chat, media
 │
 ├── apps/
 │   └── demo/                 ← Demo application
 │       └── src/
-│           ├── pages/        ← Page definitions (examples)
-│           └── stores/       ← Svelte stores
+│           ├── pages/        ← Page definitions (pure data)
+│           └── stores/       ← Svelte 5 stores
 │
+├── CHEATSHEET.md             ← Quick syntax reference
 └── pnpm-workspace.yaml
 ```
 
