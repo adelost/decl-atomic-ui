@@ -21,6 +21,26 @@ let selectedSegments = new Set<string>();
 // Number input demo state
 let numberValue = 5;
 
+// SearchSelect demo state
+let searchSelectValue = '';
+
+// FilterBar demo state
+let filterSearch = '';
+let filterStatus = 'all';
+let filterRole = 'all';
+
+// TagCloud demo state
+let activeTag = '';
+
+// TreeView demo state
+let treeNodeStatus: Record<string, 'locked' | 'available' | 'completed'> = {
+  'intro': 'completed',
+  'basics': 'completed',
+  'advanced': 'available',
+  'expert': 'locked',
+  'master': 'locked',
+};
+
 function onSecretCode() {
   secretUnlocked = true;
   emit('secretCode');
@@ -627,6 +647,96 @@ export const componentsPage = {
                     emptyText: 'No items',
                   },
                 },
+
+                // Search Select
+                {
+                  molecule: 'showcase',
+                  title: 'Search Select',
+                  description: 'Searchable dropdown with lazy loading',
+                  layout: 'side-by-side',
+                  previewAlign: 'stretch',
+                  component: {
+                    molecule: 'search-select',
+                    id: 'demo-search-select',
+                    label: 'Select User',
+                    placeholder: 'Search users...',
+                    value: () => searchSelectValue,
+                    onChange: (v: string) => (searchSelectValue = v),
+                    options: () => [
+                      { value: 'alice', label: 'Alice Johnson', subtitle: 'alice@example.com' },
+                      { value: 'bob', label: 'Bob Smith', subtitle: 'bob@example.com' },
+                      { value: 'carol', label: 'Carol White', subtitle: 'carol@example.com' },
+                      { value: 'david', label: 'David Brown', subtitle: 'david@example.com' },
+                      { value: 'emma', label: 'Emma Davis', subtitle: 'emma@example.com' },
+                    ],
+                  },
+                },
+
+                // Filter Bar
+                {
+                  molecule: 'showcase',
+                  title: 'Filter Bar',
+                  description: 'Search and filter controls for data views',
+                  layout: 'stacked',
+                  previewAlign: 'stretch',
+                  component: {
+                    molecule: 'filter-bar',
+                    search: {
+                      id: 'demo-filter-search',
+                      placeholder: 'Search items...',
+                      value: () => filterSearch,
+                      onChange: (v: string) => (filterSearch = v),
+                    },
+                    filters: [
+                      {
+                        id: 'status-filter',
+                        label: 'Status',
+                        value: () => filterStatus,
+                        onChange: (v: string) => (filterStatus = v),
+                        options: [
+                          { value: 'all', label: 'All Status' },
+                          { value: 'active', label: 'Active' },
+                          { value: 'pending', label: 'Pending' },
+                          { value: 'inactive', label: 'Inactive' },
+                        ],
+                      },
+                      {
+                        id: 'role-filter',
+                        label: 'Role',
+                        value: () => filterRole,
+                        onChange: (v: string) => (filterRole = v),
+                        options: [
+                          { value: 'all', label: 'All Roles' },
+                          { value: 'admin', label: 'Admin' },
+                          { value: 'editor', label: 'Editor' },
+                          { value: 'viewer', label: 'Viewer' },
+                        ],
+                      },
+                    ],
+                  },
+                },
+
+                // Tag Cloud
+                {
+                  molecule: 'showcase',
+                  title: 'Tag Cloud',
+                  description: 'Interactive tag visualization with counts',
+                  layout: 'side-by-side',
+                  component: {
+                    molecule: 'tag-cloud',
+                    tags: [
+                      { label: 'JavaScript', count: 120, active: activeTag === 'JavaScript' },
+                      { label: 'TypeScript', count: 95, active: activeTag === 'TypeScript' },
+                      { label: 'React', count: 80, active: activeTag === 'React' },
+                      { label: 'Svelte', count: 65, active: activeTag === 'Svelte' },
+                      { label: 'Vue', count: 55, active: activeTag === 'Vue' },
+                      { label: 'CSS', count: 45, active: activeTag === 'CSS' },
+                      { label: 'HTML', count: 40, active: activeTag === 'HTML' },
+                      { label: 'Node.js', count: 35, active: activeTag === 'Node.js' },
+                    ],
+                    onTagClick: (label: string) => (activeTag = activeTag === label ? '' : label),
+                  },
+                },
               ],
             },
           ],
@@ -723,6 +833,39 @@ export const componentsPage = {
                     text: 'Delete Item',
                     variant: 'danger',
                     onClick: () => (demoAlertOpen = true),
+                  },
+                },
+
+                // Tree View
+                {
+                  molecule: 'showcase',
+                  title: 'Tree View',
+                  description: 'Hierarchical node structure for skill trees, org charts',
+                  layout: 'stacked',
+                  component: {
+                    organism: 'tree-view',
+                    id: 'demo-tree',
+                    nodeSize: 'md',
+                    nodes: [
+                      { id: 'intro', title: 'Introduction', description: 'Get started', icon: 'play', status: () => treeNodeStatus['intro'] },
+                      { id: 'basics', title: 'Basics', description: 'Core concepts', icon: 'book', parent: 'intro', status: () => treeNodeStatus['basics'] },
+                      { id: 'advanced', title: 'Advanced', description: 'Deep dive', icon: 'rocket', parent: 'basics', status: () => treeNodeStatus['advanced'] },
+                      { id: 'expert', title: 'Expert', description: 'Master level', icon: 'award', parent: 'advanced', status: () => treeNodeStatus['expert'] },
+                      { id: 'master', title: 'Master', description: 'Complete mastery', icon: 'crown', parent: 'expert', status: () => treeNodeStatus['master'] },
+                    ],
+                    onNodeClick: (node: { id: string }) => {
+                      const current = treeNodeStatus[node.id];
+                      if (current === 'available') {
+                        treeNodeStatus[node.id] = 'completed';
+                        // Unlock next node
+                        const order = ['intro', 'basics', 'advanced', 'expert', 'master'];
+                        const idx = order.indexOf(node.id);
+                        if (idx < order.length - 1) {
+                          treeNodeStatus[order[idx + 1]] = 'available';
+                        }
+                        treeNodeStatus = { ...treeNodeStatus };
+                      }
+                    },
                   },
                 },
               ],
@@ -873,6 +1016,39 @@ export const componentsPage = {
                         ],
                       },
                     ],
+                  },
+                },
+
+                { atom: 'divider' },
+
+                // === CANVAS PRESET ===
+                { atom: 'text', variant: 'heading', text: '🎨 Canvas Preset' },
+                { atom: 'text', variant: 'muted', text: '3D graphics and physics simulations' },
+
+                {
+                  molecule: 'showcase',
+                  title: 'Three Canvas',
+                  description: '3D rendering with Three.js - rotating cube demo',
+                  layout: 'stacked',
+                  component: {
+                    atom: 'three-canvas',
+                    width: 400,
+                    height: 300,
+                    background: '#1a1a2e',
+                  },
+                },
+
+                {
+                  molecule: 'showcase',
+                  title: 'Matter Canvas',
+                  description: '2D physics with Matter.js - falling boxes demo',
+                  layout: 'stacked',
+                  component: {
+                    atom: 'matter-canvas',
+                    width: 400,
+                    height: 300,
+                    background: '#1a1a2e',
+                    gravity: { x: 0, y: 1 },
                   },
                 },
               ],
