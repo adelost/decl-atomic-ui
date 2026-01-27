@@ -12,10 +12,12 @@
   import { codePage } from './pages/examples/code.svelte';
   import { chatPage } from './pages/examples/chat';
   import { toolsPage } from './pages/examples/tools';
+  import { actionsPage } from './pages/examples/actions';
+  import { asyncPage } from './pages/examples/async';
   import { demoMetas } from './types/demo-meta';
   import './app.css';
 
-  type PageType = 'components' | 'dashboard' | 'cryptodex' | 'skydive' | 'synthesizer' | 'occult' | 'mission' | 'code' | 'chat' | 'tools' | 'motion';
+  type PageType = 'components' | 'dashboard' | 'cryptodex' | 'skydive' | 'synthesizer' | 'occult' | 'mission' | 'code' | 'chat' | 'tools' | 'actions' | 'async' | 'motion';
 
   let currentPage = $state<PageType>('components');
 
@@ -30,10 +32,15 @@
     code: codePage,
     chat: chatPage,
     tools: toolsPage,
+    actions: actionsPage,
+    async: asyncPage,
   };
 
   const examples: { id: PageType; label: string }[] = [
     { id: 'tools', label: 'Tools & Effects' },
+    { id: 'actions', label: '$action Demo' },
+    { id: 'async', label: '$async Demo' },
+    { id: 'chat', label: 'Chat' },
     { id: 'dashboard', label: 'Dashboard' },
     { id: 'cryptodex', label: 'Crypto-Dex' },
     { id: 'skydive', label: 'Skydive Logger' },
@@ -41,7 +48,6 @@
     { id: 'occult', label: 'Occult Archive' },
     { id: 'mission', label: 'Mission Control' },
     { id: 'code', label: 'Code Components' },
-    { id: 'chat', label: 'Chat' },
   ];
 
   function isExample(page: PageType): boolean {
