@@ -9,11 +9,28 @@ See [AGENTS.md](../AGENTS.md) for full context.
 **State binding:** Use `onChange: (v) => store.field = v`, NOT `bind: "store.field"`
 
 **Structure:**
-- `ui/atoms/` - Primitives (Input, Button)
-- `ui/molecules/` - Groups (Form, Card)
-- `ui/organisms/` - Complex (Table)
-- `ui/renderer/` - Framework-specific rendering
-- `pages/` - Pure data objects
+- `packages/svelte/src/atoms/` - Primitives (Input, Button, Toast)
+- `packages/svelte/src/molecules/` - Groups (Form, Grid, Pagination)
+- `packages/svelte/src/organisms/` - Complex (Table, Modal, Sidebar)
+- `packages/svelte/src/engine/` - $action, $async, effects
+- `packages/svelte/src/renderer/` - Framework-specific rendering
+- `apps/demo/src/pages/` - Pure data objects
+
+**$action system:**
+```typescript
+{
+  molecule: "form",
+  $action: {
+    endpoint: "?/save",
+    onSuccess: [
+      { $event: "toast", text: "Saved!" },
+      { $event: "close-modal" }
+    ]
+  }
+}
+```
+
+**Effects:** `toast`, `close-modal`, `invalidate`, `redirect`, `emit`
 
 **Don't:**
 - Import .svelte in pages

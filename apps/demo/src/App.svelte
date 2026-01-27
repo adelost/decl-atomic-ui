@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { PageRenderer, EffectOverlay, SectionRenderer, type DropdownMenuMolecule, type StackMolecule } from 'svelte-daui';
+  import { PageRenderer, EffectOverlay, ToastProvider, SectionRenderer, type DropdownMenuMolecule, type StackMolecule } from 'svelte-daui';
   import MotionCanvasTest from './MotionCanvasTest.svelte';
   import DemoHeader from './DemoHeader.svelte';
   import { componentsPage } from './pages/components';
@@ -11,10 +11,11 @@
   import { missionPage } from './pages/examples/mission';
   import { codePage } from './pages/examples/code.svelte';
   import { chatPage } from './pages/examples/chat';
+  import { toolsPage } from './pages/examples/tools';
   import { demoMetas } from './types/demo-meta';
   import './app.css';
 
-  type PageType = 'components' | 'dashboard' | 'cryptodex' | 'skydive' | 'synthesizer' | 'occult' | 'mission' | 'code' | 'chat' | 'motion';
+  type PageType = 'components' | 'dashboard' | 'cryptodex' | 'skydive' | 'synthesizer' | 'occult' | 'mission' | 'code' | 'chat' | 'tools' | 'motion';
 
   let currentPage = $state<PageType>('components');
 
@@ -28,9 +29,11 @@
     mission: missionPage,
     code: codePage,
     chat: chatPage,
+    tools: toolsPage,
   };
 
   const examples: { id: PageType; label: string }[] = [
+    { id: 'tools', label: 'Tools & Effects' },
     { id: 'dashboard', label: 'Dashboard' },
     { id: 'cryptodex', label: 'Crypto-Dex' },
     { id: 'skydive', label: 'Skydive Logger' },
@@ -102,6 +105,9 @@
 
 <!-- Global effect overlay for confetti, achievements, etc. -->
 <EffectOverlay />
+
+<!-- Toast notifications -->
+<ToastProvider position="bottom-right" duration={4000} />
 
 {#if currentPage === 'motion'}
   <MotionCanvasTest />

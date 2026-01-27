@@ -24,6 +24,7 @@ export { default as OrganismRenderer } from './renderer/OrganismRenderer.svelte'
 
 // Effects (opt-in)
 export { default as EffectOverlay } from './effects/EffectOverlay.svelte';
+export { default as ToastProvider } from './effects/ToastProvider.svelte';
 
 // Engine - Action and Async handlers
 export {

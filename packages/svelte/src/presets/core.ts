@@ -14,26 +14,33 @@ import Icon from '../atoms/Icon.svelte';
 import IconButton from '../atoms/IconButton.svelte';
 import Image from '../atoms/Image.svelte';
 import Input from '../atoms/Input.svelte';
+import Link from '../atoms/Link.svelte';
 import NumberInput from '../atoms/NumberInput.svelte';
 import Popover from '../atoms/Popover.svelte';
 import Progress from '../atoms/Progress.svelte';
 import RadioGroup from '../atoms/RadioGroup.svelte';
+import SearchInput from '../atoms/SearchInput.svelte';
 import Select from '../atoms/Select.svelte';
 import Skeleton from '../atoms/Skeleton.svelte';
 import Slider from '../atoms/Slider.svelte';
 import Spinner from '../atoms/Spinner.svelte';
 import Switch from '../atoms/Switch.svelte';
 import Text from '../atoms/Text.svelte';
+import TextArea from '../atoms/TextArea.svelte';
+import Toast from '../atoms/Toast.svelte';
 import Tooltip from '../atoms/Tooltip.svelte';
 
 // Molecules
 import Accordion from '../molecules/Accordion.svelte';
 import AlertPanel from '../molecules/AlertPanel.svelte';
+import Breadcrumbs from '../molecules/Breadcrumbs.svelte';
+import Container from '../molecules/Container.svelte';
 import DropdownMenu from '../molecules/DropdownMenu.svelte';
 import Form from '../molecules/Form.svelte';
 import Grid from '../molecules/Grid.svelte';
 import List from '../molecules/List.svelte';
 import PageHeader from '../molecules/PageHeader.svelte';
+import Pagination from '../molecules/Pagination.svelte';
 import Showcase from '../molecules/Showcase.svelte';
 import Stack from '../molecules/Stack.svelte';
 import Tabs from '../molecules/Tabs.svelte';
@@ -41,7 +48,9 @@ import Tabs from '../molecules/Tabs.svelte';
 // Organisms
 import AlertDialog from '../organisms/AlertDialog.svelte';
 import Card from '../organisms/Card.svelte';
+import Header from '../organisms/Header.svelte';
 import Modal from '../organisms/Modal.svelte';
+import Sidebar from '../organisms/Sidebar.svelte';
 import SlideModal from '../organisms/SlideModal.svelte';
 
 export const core: Preset = {
@@ -55,26 +64,33 @@ export const core: Preset = {
     'icon-button': IconButton,
     image: Image,
     input: Input,
+    link: Link,
     'number-input': NumberInput,
     popover: Popover,
     progress: Progress,
     'radio-group': RadioGroup,
+    'search-input': SearchInput,
     select: Select,
     skeleton: Skeleton,
     slider: Slider,
     spinner: Spinner,
     switch: Switch,
     text: Text,
+    textarea: TextArea,
+    toast: Toast,
     tooltip: Tooltip,
   },
   molecules: {
     accordion: Accordion,
     'alert-panel': AlertPanel,
+    breadcrumbs: Breadcrumbs,
+    container: Container,
     'dropdown-menu': DropdownMenu,
     form: Form,
     grid: Grid,
     list: List,
     'page-header': PageHeader,
+    pagination: Pagination,
     showcase: Showcase,
     stack: Stack,
     tabs: Tabs,
@@ -82,7 +98,9 @@ export const core: Preset = {
   organisms: {
     'alert-dialog': AlertDialog,
     card: Card,
+    header: Header,
     modal: Modal,
+    sidebar: Sidebar,
     'slide-modal': SlideModal,
   },
 };
