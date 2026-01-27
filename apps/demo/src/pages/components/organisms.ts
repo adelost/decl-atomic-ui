@@ -86,6 +86,44 @@ export const organismShowcases: Section[] = [
     },
   },
 
+  // Header
+  {
+    molecule: 'showcase',
+    title: 'Header',
+    description: 'Page header with logo, navigation, and actions',
+    layout: 'stacked',
+    previewAlign: 'stretch',
+    component: {
+      organism: 'header',
+      title: 'MyApp',
+      nav: [
+        { label: 'Home', href: '#', active: () => true },
+        { label: 'Products', href: '#' },
+        { label: 'About', href: '#' },
+      ],
+      actions: [
+        { atom: 'button', text: 'Sign In', variant: 'ghost' },
+        { atom: 'button', text: 'Get Started', variant: 'primary' },
+      ],
+    },
+  },
+
+  // Sidebar
+  {
+    molecule: 'showcase',
+    title: 'Sidebar',
+    description: 'Navigation sidebar with icons',
+    layout: 'side-by-side',
+    component: {
+      organism: 'sidebar',
+      items: [
+        { route: '/dashboard', label: 'Dashboard', icon: '📊' },
+        { route: '/users', label: 'Users', icon: '👥' },
+        { route: '/settings', label: 'Settings', icon: '⚙️' },
+      ],
+    },
+  },
+
   // Tree View
   {
     molecule: 'showcase',

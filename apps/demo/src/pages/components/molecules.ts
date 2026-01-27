@@ -281,6 +281,37 @@ export const moleculeShowcases: Section[] = [
     },
   },
 
+  // Breadcrumbs
+  {
+    molecule: 'showcase',
+    title: 'Breadcrumbs',
+    description: 'Navigation breadcrumb trail',
+    layout: 'side-by-side',
+    component: {
+      molecule: 'breadcrumbs',
+      items: [
+        { label: 'Home', href: '#' },
+        { label: 'Products', href: '#' },
+        { label: 'Electronics', href: '#' },
+        { label: 'Laptops' },
+      ],
+    },
+  },
+
+  // Pagination
+  {
+    molecule: 'showcase',
+    title: 'Pagination',
+    description: 'Page navigation controls',
+    layout: 'side-by-side',
+    component: {
+      molecule: 'pagination',
+      currentPage: () => showcaseStore.paginationPage,
+      totalPages: () => 10,
+      onPageChange: (page: number) => (showcaseStore.paginationPage = page),
+    },
+  },
+
   { atom: 'divider' },
   { atom: 'text', variant: 'heading', text: '💬 Chat Molecules' },
 

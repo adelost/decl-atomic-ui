@@ -31,6 +31,9 @@ export class ShowcaseStore {
   timelineZoom = $state(1);
   selectedSegments = $state(new Set<string>());
 
+  // Pagination state
+  paginationPage = $state(3);
+
   // Secret code state
   secretUnlocked = $state(false);
 

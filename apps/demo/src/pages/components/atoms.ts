@@ -327,6 +327,49 @@ export const atomShowcases: Section[] = [
     component: { atom: 'divider' },
   },
 
+  // Link
+  {
+    molecule: 'showcase',
+    title: 'Link',
+    description: 'Styled anchor links with variants',
+    layout: 'side-by-side',
+    variants: [
+      { label: 'Default', component: { atom: 'link', text: 'Default Link', href: '#' } },
+      { label: 'Muted', component: { atom: 'link', text: 'Muted Link', href: '#', variant: 'muted' } },
+      { label: 'Back', component: { atom: 'link', text: 'Go Back', href: '#', variant: 'back' } },
+    ],
+  },
+
+  // TextArea
+  {
+    molecule: 'showcase',
+    title: 'TextArea',
+    description: 'Multi-line text input',
+    layout: 'side-by-side',
+    previewAlign: 'stretch',
+    component: {
+      atom: 'textarea',
+      id: 'demo-textarea',
+      label: 'Description',
+      placeholder: 'Enter a longer description...',
+      rows: 4,
+    },
+  },
+
+  // SearchInput
+  {
+    molecule: 'showcase',
+    title: 'Search Input',
+    description: 'Input with search icon and clear button',
+    layout: 'side-by-side',
+    previewAlign: 'stretch',
+    component: {
+      atom: 'search-input',
+      id: 'demo-search',
+      placeholder: 'Search...',
+    },
+  },
+
   // Image
   {
     molecule: 'showcase',
