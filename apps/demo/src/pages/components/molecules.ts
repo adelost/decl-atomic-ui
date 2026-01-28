@@ -313,6 +313,343 @@ export const moleculeShowcases: Section[] = [
   },
 
   { atom: 'divider' },
+  { atom: 'text', variant: 'heading', text: '🆕 New Molecules (shadcn/Bits UI)' },
+
+  // Toggle Group
+  {
+    molecule: 'showcase',
+    title: 'Toggle Group',
+    description: 'Grouped toggle buttons (segmented control)',
+    layout: 'side-by-side',
+    variants: [
+      {
+        label: 'Single',
+        component: {
+          molecule: 'toggle-group',
+          id: 'tg-single',
+          type: 'single',
+          value: () => showcaseStore.toggleGroupValue,
+          onChange: (v: string | string[]) => (showcaseStore.toggleGroupValue = v as string),
+          items: [
+            { value: 'left', icon: 'align-left' },
+            { value: 'center', icon: 'align-center' },
+            { value: 'right', icon: 'align-right' },
+          ],
+        },
+      },
+      {
+        label: 'Multiple',
+        component: {
+          molecule: 'toggle-group',
+          id: 'tg-multiple',
+          type: 'multiple',
+          value: () => showcaseStore.toolbarFormatting,
+          onChange: (v: string | string[]) => (showcaseStore.toolbarFormatting = v as string[]),
+          items: [
+            { value: 'bold', icon: 'bold' },
+            { value: 'italic', icon: 'italic' },
+            { value: 'underline', icon: 'underline' },
+          ],
+        },
+      },
+      {
+        label: 'With Labels',
+        component: {
+          molecule: 'toggle-group',
+          id: 'tg-labels',
+          type: 'single',
+          variant: 'outline',
+          items: [
+            { value: 'day', label: 'Day' },
+            { value: 'week', label: 'Week' },
+            { value: 'month', label: 'Month' },
+          ],
+        },
+      },
+      {
+        label: 'Small Outline',
+        component: {
+          molecule: 'toggle-group',
+          id: 'tg-small',
+          type: 'single',
+          size: 'sm',
+          variant: 'outline',
+          items: [
+            { value: 'grid', icon: 'grid' },
+            { value: 'list', icon: 'list' },
+          ],
+        },
+      },
+    ],
+  },
+
+  // Rating Group
+  {
+    molecule: 'showcase',
+    title: 'Rating Group',
+    description: 'Star rating input',
+    layout: 'side-by-side',
+    variants: [
+      {
+        label: 'Interactive',
+        component: {
+          molecule: 'rating-group',
+          id: 'rating-interactive',
+          max: 5,
+          value: () => showcaseStore.ratingValue,
+          onChange: (v: number) => (showcaseStore.ratingValue = v),
+          showValue: true,
+        },
+      },
+      {
+        label: 'Read-only',
+        component: {
+          molecule: 'rating-group',
+          id: 'rating-readonly',
+          max: 5,
+          value: () => 4,
+          readonly: true,
+        },
+      },
+      {
+        label: 'Half Stars',
+        component: {
+          molecule: 'rating-group',
+          id: 'rating-half',
+          max: 5,
+          allowHalf: true,
+          value: () => 3.5,
+          showValue: true,
+        },
+      },
+      {
+        label: 'Large',
+        component: {
+          molecule: 'rating-group',
+          id: 'rating-large',
+          max: 5,
+          size: 'lg',
+          value: () => 4,
+        },
+      },
+    ],
+  },
+
+  // Hover Card
+  {
+    molecule: 'showcase',
+    title: 'Hover Card',
+    description: 'Preview card shown on hover',
+    layout: 'side-by-side',
+    component: {
+      molecule: 'hover-card',
+      trigger: [
+        {
+          molecule: 'stack',
+          direction: 'horizontal',
+          gap: 'sm',
+          align: 'center',
+          items: [
+            { atom: 'avatar', fallback: 'JD', size: 'sm' },
+            { atom: 'link', text: '@johndoe', href: '#' },
+          ],
+        },
+      ],
+      content: [
+        {
+          molecule: 'stack',
+          gap: 'md',
+          items: [
+            {
+              molecule: 'stack',
+              direction: 'horizontal',
+              gap: 'md',
+              align: 'start',
+              items: [
+                { atom: 'avatar', fallback: 'John Doe', size: 'lg' },
+                {
+                  molecule: 'stack',
+                  gap: 'none',
+                  items: [
+                    { atom: 'text', text: 'John Doe', variant: 'heading' },
+                    { atom: 'text', text: '@johndoe', variant: 'muted' },
+                  ],
+                },
+              ],
+            },
+            { atom: 'text', text: 'Software engineer passionate about building great user experiences.', variant: 'default' },
+            {
+              molecule: 'stack',
+              direction: 'horizontal',
+              gap: 'md',
+              items: [
+                { atom: 'text', text: '142 Following', variant: 'small' },
+                { atom: 'text', text: '2.8k Followers', variant: 'small' },
+              ],
+            },
+          ],
+        },
+      ],
+      openDelay: 500,
+      closeDelay: 200,
+    },
+  },
+
+  // Date Range Picker
+  {
+    molecule: 'showcase',
+    title: 'Date Range Picker',
+    description: 'Calendar picker for date ranges',
+    layout: 'side-by-side',
+    previewAlign: 'stretch',
+    variants: [
+      {
+        label: 'Default',
+        component: {
+          molecule: 'date-range-picker',
+          id: 'drp-default',
+          label: 'Select Dates',
+          value: () => showcaseStore.dateRangeValue,
+          onChange: (v: { start: Date | null; end: Date | null }) => (showcaseStore.dateRangeValue = v),
+        },
+      },
+      {
+        label: 'Single Calendar',
+        component: {
+          molecule: 'date-range-picker',
+          id: 'drp-single',
+          label: 'Trip Dates',
+          numberOfMonths: 1,
+        },
+      },
+      {
+        label: 'With Limits',
+        component: {
+          molecule: 'date-range-picker',
+          id: 'drp-limits',
+          label: 'Booking Window',
+          minDate: new Date(),
+          maxDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+        },
+      },
+    ],
+  },
+
+  // Toolbar
+  {
+    molecule: 'showcase',
+    title: 'Toolbar',
+    description: 'Toolbar container for app/editor toolbars',
+    layout: 'stacked',
+    previewAlign: 'stretch',
+    component: {
+      molecule: 'toolbar',
+      id: 'demo-toolbar',
+      items: [
+        {
+          type: 'toggle-group',
+          id: 'toolbar-alignment',
+          mode: 'single',
+          value: () => showcaseStore.toolbarAlignment,
+          onChange: (v: string | string[]) => (showcaseStore.toolbarAlignment = v as string),
+          items: [
+            { value: 'left', icon: 'align-left', tooltip: 'Align left' },
+            { value: 'center', icon: 'align-center', tooltip: 'Align center' },
+            { value: 'right', icon: 'align-right', tooltip: 'Align right' },
+          ],
+        },
+        { type: 'separator' },
+        {
+          type: 'toggle-group',
+          id: 'toolbar-formatting',
+          mode: 'multiple',
+          value: () => showcaseStore.toolbarFormatting,
+          onChange: (v: string | string[]) => (showcaseStore.toolbarFormatting = v as string[]),
+          items: [
+            { value: 'bold', icon: 'bold', tooltip: 'Bold (Ctrl+B)' },
+            { value: 'italic', icon: 'italic', tooltip: 'Italic (Ctrl+I)' },
+            { value: 'underline', icon: 'underline', tooltip: 'Underline (Ctrl+U)' },
+          ],
+        },
+        { type: 'separator' },
+        { type: 'button', icon: 'link', tooltip: 'Insert link' },
+        { type: 'button', icon: 'image', tooltip: 'Insert image' },
+        { type: 'separator' },
+        { type: 'link', href: '#', icon: 'help-circle', label: 'Help' },
+      ],
+    },
+  },
+
+  { atom: 'divider' },
+  { atom: 'text', variant: 'heading', text: '🎨 Layout Molecules' },
+
+  // Hero
+  {
+    molecule: 'showcase',
+    title: 'Hero',
+    description: 'Full-width hero sections with background, overlay and parallax',
+    layout: 'stacked',
+    previewAlign: 'stretch',
+    variants: [
+      {
+        label: 'With Image',
+        component: {
+          molecule: 'hero',
+          backgroundImage: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1600',
+          overlayColor: 'rgba(0,0,0,0.5)',
+          height: 'sm',
+          align: 'center',
+          separator: { shape: 'wave', color: 'white' },
+          items: [
+            { atom: 'text', variant: 'heading', text: 'Welcome to Adventure' },
+            { atom: 'text', variant: 'muted', text: 'Discover amazing experiences' },
+          ],
+        },
+      },
+      {
+        label: 'Parallax Effect',
+        component: {
+          molecule: 'hero',
+          backgroundImage: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600',
+          overlayColor: 'rgba(15, 23, 42, 0.6)',
+          parallax: true,
+          parallaxSpeed: 0.3,
+          height: 'md',
+          align: 'center',
+          separator: { shape: 'curve', color: 'white', height: 100 },
+          items: [
+            { atom: 'text', variant: 'heading', text: 'Scroll to See Parallax' },
+            { atom: 'text', variant: 'muted', text: 'The background moves at a different speed' },
+          ],
+        },
+      },
+      {
+        label: 'Solid Color',
+        component: {
+          molecule: 'hero',
+          backgroundColor: '#1e40af',
+          height: 'sm',
+          align: 'left',
+          contentWidth: 'md',
+          items: [
+            { atom: 'text', variant: 'heading', text: 'Get Started Today' },
+            { atom: 'text', variant: 'muted', text: 'Build something amazing.' },
+            {
+              molecule: 'stack',
+              direction: 'horizontal',
+              gap: 'md',
+              items: [
+                { atom: 'button', text: 'Sign Up', variant: 'primary' },
+                { atom: 'button', text: 'Learn More', variant: 'ghost' },
+              ],
+            },
+          ],
+        },
+      },
+    ],
+  },
+
+  { atom: 'divider' },
   { atom: 'text', variant: 'heading', text: '💬 Chat Molecules' },
 
   // Chat Input

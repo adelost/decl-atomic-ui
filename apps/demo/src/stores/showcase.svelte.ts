@@ -31,8 +31,37 @@ export class ShowcaseStore {
   timelineZoom = $state(1);
   selectedSegments = $state(new Set<string>());
 
+  // New video components states
+  overlayToggles = $state<Record<string, boolean>>({
+    boxes: true,
+    poses: true,
+    labels: false,
+  });
+  canvasDrawingMode = $state<'none' | 'box' | 'points'>('none');
+
   // Pagination state
   paginationPage = $state(3);
+
+  // Upload state
+  uploadedFiles = $state<File | File[] | null>(null);
+
+  // Audio player state
+  audioTime = $state(0);
+  audioPlaying = $state(false);
+
+  // Date picker state
+  selectedDate = $state<Date | null>(null);
+
+  // New component states
+  pinValue = $state('');
+  toggleValue = $state(false);
+  meterValue = $state(65);
+  timeValue = $state('14:30');
+  dateRangeValue = $state<{ start: Date | null; end: Date | null }>({ start: null, end: null });
+  toggleGroupValue = $state('left');
+  ratingValue = $state(3);
+  toolbarAlignment = $state('left');
+  toolbarFormatting = $state<string[]>([]);
 
   // Secret code state
   secretUnlocked = $state(false);

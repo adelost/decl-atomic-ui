@@ -138,6 +138,8 @@
   import Pause from '@lucide/svelte/icons/pause';
   import Volume2 from '@lucide/svelte/icons/volume-2';
   import VolumeX from '@lucide/svelte/icons/volume-x';
+  import Music from '@lucide/svelte/icons/music';
+  import Music2 from '@lucide/svelte/icons/music-2';
 
   // Layout & View
   import Maximize from '@lucide/svelte/icons/maximize';
@@ -353,6 +355,9 @@
     'volume-2': Volume2,
     'volume-x': VolumeX,
     mute: VolumeX,
+    music: Music,
+    'music-2': Music2,
+    audio: Music,
 
     // Layout & View
     maximize: Maximize,

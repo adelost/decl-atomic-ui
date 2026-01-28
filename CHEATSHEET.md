@@ -24,31 +24,33 @@ import { PageRenderer, core, standard, full, chat, media } from 'svelte-daui';
 <!-- SYNC: Update when adding new components -->
 
 ```
-ATOMS (35):
+ATOMS (38):
   Core:    avatar, badge, button, checkbox, divider, icon, icon-button,
            image, input, number-input, popover, progress, radio-group,
            select, skeleton, slider, spinner, switch, text, tooltip
   Charts:  chart
   Chat:    chat-bubble, typing-indicator
-  Media:   playhead, track-marker, track-segment, detection-box, pose-skeleton
+  Media:   playhead, track-marker, track-segment, detection-box, pose-skeleton,
+           waveform, time-display, thumbnail
   Canvas:  three-canvas, matter-canvas (manual import)
   Other:   link, search-input, textarea, toast
 
-MOLECULES (24):
+MOLECULES (25):
   Core:    accordion, alert-panel, dropdown-menu, form, grid, list,
            page-header, showcase, stack, tabs
   Table:   filter-bar, search-select
   Charts:  stat-card, tag-cloud
   Chat:    chat-input, chat-header, chat-messages-list
-  Media:   data-point, frame-controls, speed-control, track
+  Media:   data-point, frame-controls, speed-control, track, overlay-toggles
   Other:   breadcrumbs, container, pagination
 
-ORGANISMS (11):
+ORGANISMS (14):
   Core:    alert-dialog, card, modal, slide-modal
   Table:   table
   Standard: tree-view
   Chat:    chat-panel
-  Media:   video-player, video-timeline
+  Media:   video-player, video-timeline, media-overlay
+  Three.js: depth-viewer, pose-3d-viewer (requires three.js preset)
   Other:   header, sidebar
 ```
 

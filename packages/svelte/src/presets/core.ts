@@ -10,6 +10,7 @@ import Badge from '../atoms/Badge.svelte';
 import Button from '../atoms/Button.svelte';
 import Checkbox from '../atoms/Checkbox.svelte';
 import Divider from '../atoms/Divider.svelte';
+import Separator from '../atoms/Separator.svelte';
 import Icon from '../atoms/Icon.svelte';
 import IconButton from '../atoms/IconButton.svelte';
 import Image from '../atoms/Image.svelte';
@@ -29,6 +30,15 @@ import Text from '../atoms/Text.svelte';
 import TextArea from '../atoms/TextArea.svelte';
 import Toast from '../atoms/Toast.svelte';
 import Tooltip from '../atoms/Tooltip.svelte';
+import Upload from '../atoms/Upload.svelte';
+import AudioPlayer from '../atoms/AudioPlayer.svelte';
+import DatePicker from '../atoms/DatePicker.svelte';
+import PinInput from '../atoms/PinInput.svelte';
+import Toggle from '../atoms/Toggle.svelte';
+import Kbd from '../atoms/Kbd.svelte';
+import Meter from '../atoms/Meter.svelte';
+import TimeField from '../atoms/TimeField.svelte';
+import DateRangeField from '../atoms/DateRangeField.svelte';
 
 // Molecules
 import Accordion from '../molecules/Accordion.svelte';
@@ -38,12 +48,18 @@ import Container from '../molecules/Container.svelte';
 import DropdownMenu from '../molecules/DropdownMenu.svelte';
 import Form from '../molecules/Form.svelte';
 import Grid from '../molecules/Grid.svelte';
+import Hero from '../molecules/Hero.svelte';
 import List from '../molecules/List.svelte';
 import PageHeader from '../molecules/PageHeader.svelte';
 import Pagination from '../molecules/Pagination.svelte';
 import Showcase from '../molecules/Showcase.svelte';
 import Stack from '../molecules/Stack.svelte';
 import Tabs from '../molecules/Tabs.svelte';
+import ToggleGroup from '../molecules/ToggleGroup.svelte';
+import RatingGroup from '../molecules/RatingGroup.svelte';
+import HoverCard from '../molecules/HoverCard.svelte';
+import DateRangePicker from '../molecules/DateRangePicker.svelte';
+import Toolbar from '../molecules/Toolbar.svelte';
 
 // Organisms
 import AlertDialog from '../organisms/AlertDialog.svelte';
@@ -60,6 +76,7 @@ export const core: Preset = {
     button: Button,
     checkbox: Checkbox,
     divider: Divider,
+    separator: Separator,
     icon: Icon,
     'icon-button': IconButton,
     image: Image,
@@ -79,6 +96,15 @@ export const core: Preset = {
     textarea: TextArea,
     toast: Toast,
     tooltip: Tooltip,
+    upload: Upload,
+    'audio-player': AudioPlayer,
+    date: DatePicker,
+    'pin-input': PinInput,
+    toggle: Toggle,
+    kbd: Kbd,
+    meter: Meter,
+    'time-field': TimeField,
+    'date-range-field': DateRangeField,
   },
   molecules: {
     accordion: Accordion,
@@ -88,12 +114,18 @@ export const core: Preset = {
     'dropdown-menu': DropdownMenu,
     form: Form,
     grid: Grid,
+    hero: Hero,
     list: List,
     'page-header': PageHeader,
     pagination: Pagination,
     showcase: Showcase,
     stack: Stack,
     tabs: Tabs,
+    'toggle-group': ToggleGroup,
+    'rating-group': RatingGroup,
+    'hover-card': HoverCard,
+    'date-range-picker': DateRangePicker,
+    toolbar: Toolbar,
   },
   organisms: {
     'alert-dialog': AlertDialog,

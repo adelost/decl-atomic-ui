@@ -14,10 +14,11 @@
   import { toolsPage } from './pages/examples/tools';
   import { actionsPage } from './pages/examples/actions';
   import { asyncPage } from './pages/examples/async';
+  import { landingPage } from './pages/examples/landing';
   import { demoMetas } from './types/demo-meta';
   import './app.css';
 
-  type PageType = 'components' | 'dashboard' | 'cryptodex' | 'skydive' | 'synthesizer' | 'occult' | 'mission' | 'code' | 'chat' | 'tools' | 'actions' | 'async' | 'motion';
+  type PageType = 'components' | 'dashboard' | 'cryptodex' | 'skydive' | 'synthesizer' | 'occult' | 'mission' | 'code' | 'chat' | 'tools' | 'actions' | 'async' | 'landing' | 'motion';
 
   let currentPage = $state<PageType>('components');
 
@@ -34,9 +35,11 @@
     tools: toolsPage,
     actions: actionsPage,
     async: asyncPage,
+    landing: landingPage,
   };
 
   const examples: { id: PageType; label: string }[] = [
+    { id: 'landing', label: 'Landing Page' },
     { id: 'tools', label: 'Tools & Effects' },
     { id: 'actions', label: '$action Demo' },
     { id: 'async', label: '$async Demo' },
