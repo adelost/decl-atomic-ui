@@ -1,6 +1,6 @@
 /**
  * Default preset - standard components for most apps
- * Includes core + table + charts + TreeView
+ * Includes core + table + charts + TreeView + DAGView
  */
 import type { Preset } from '@daui/core';
 
@@ -8,13 +8,14 @@ import { core } from './core';
 import { table } from './table';
 import { charts } from './charts';
 import TreeView from '../organisms/TreeView.svelte';
+import DAGView from '../organisms/DAGView.svelte';
 
 // Note: exported as both 'default' and 'standard' for convenience
 // since 'default' is a reserved keyword in some contexts
 export const standard: Preset = {
   atoms: { ...core.atoms, ...charts.atoms },
   molecules: { ...core.molecules, ...table.molecules, ...charts.molecules },
-  organisms: { ...core.organisms, ...table.organisms, 'tree-view': TreeView },
+  organisms: { ...core.organisms, ...table.organisms, 'tree-view': TreeView, 'dag-view': DAGView },
 };
 
 // Also export as 'defaults' to avoid reserved keyword issues

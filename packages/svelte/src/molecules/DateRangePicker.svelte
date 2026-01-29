@@ -83,7 +83,7 @@
   >
     <div class="date-input-wrapper">
       <DateRangePicker.Input {id} class="date-range-input" {placeholder}>
-        {#snippet children({ segments })}
+        {#snippet children({ segments }: { segments: { start: Array<{ part: string; value: string }>; end: Array<{ part: string; value: string }> } })}
           {#each segments.start as segment (segment.part)}
             {#if segment.part === 'literal'}
               <span class="segment-literal">{segment.value}</span>
@@ -109,7 +109,7 @@
 
     <DateRangePicker.Content class="date-content" sideOffset={4}>
       <DateRangePicker.Calendar class="date-calendar" {numberOfMonths}>
-        {#snippet children({ months, weekdays })}
+        {#snippet children({ months, weekdays }: { months: Array<{ value: DateValue; weeks: Array<Array<{ day: number }>> }>; weekdays: string[] })}
           <DateRangePicker.Header class="calendar-header">
             <DateRangePicker.PrevButton class="calendar-nav-btn">
               <Icon name="chevron-left" size="sm" />

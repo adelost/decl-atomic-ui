@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Tooltip } from 'bits-ui';
-  import type { TooltipAtom } from '@daui/core';
+  import type { TooltipAtom, Section } from '@daui/core';
+  import type { Snippet } from 'svelte';
   import SectionRenderer from '../renderer/SectionRenderer.svelte';
 
   let {
@@ -8,9 +9,10 @@
     side = 'top',
     delayDuration = 200,
     children,
-  }: Omit<TooltipAtom, 'atom'> = $props();
+  }: Omit<TooltipAtom, 'atom' | 'children'> & { children?: Section[] | Snippet | unknown } = $props();
 
   let resolvedContent = $derived(typeof content === 'function' ? content() : content);
+  let isSnippet = $derived(typeof children === 'function');
 </script>
 
 <span class="tooltip-wrapper">
@@ -18,9 +20,13 @@
     <Tooltip.Trigger asChild>
       {#snippet child({ props }: { props: Record<string, unknown> })}
         <span {...props}>
-          {#each children as section}
-            <SectionRenderer {section} />
-          {/each}
+          {#if isSnippet}
+            {@render (children as Snippet)()}
+          {:else if children}
+            {#each (children as Section[]) as section}
+              <SectionRenderer {section} />
+            {/each}
+          {/if}
         </span>
       {/snippet}
     </Tooltip.Trigger>

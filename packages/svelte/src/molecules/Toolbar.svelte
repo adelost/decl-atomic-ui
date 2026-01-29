@@ -71,7 +71,7 @@
             id={item.id}
             type="single"
             value={item.value() as string}
-            onValueChange={(v) => item.onChange(v)}
+            onValueChange={(v: string) => item.onChange(v)}
             class="toolbar-toggle-group-inner"
           >
             {#each item.items as toggleItem (toggleItem.value)}
@@ -115,7 +115,7 @@
             id={item.id}
             type="multiple"
             value={item.value() as string[]}
-            onValueChange={(v) => item.onChange(v)}
+            onValueChange={(v: string[]) => item.onChange(v)}
             class="toolbar-toggle-group-inner"
           >
             {#each item.items as toggleItem (toggleItem.value)}

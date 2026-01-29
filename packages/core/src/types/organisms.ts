@@ -3,7 +3,8 @@
  */
 import type { BaseAtom } from './base';
 import type { Section } from './page';
-import type { ChatAuthor, ChatMessage } from './molecules';
+import type { ChatAuthor } from './atoms';
+import type { ChatMessage } from './molecules';
 
 // ============================================
 // TABLE ORGANISM
@@ -528,6 +529,43 @@ export interface MediaOverlayOrganism extends BaseAtom {
 }
 
 // ============================================
+// DAG VIEW ORGANISM
+// ============================================
+
+/** Node in a DAG visualization */
+export interface DAGNode {
+  id: string;
+  label: string;
+  status?: 'pending' | 'running' | 'completed' | 'failed' | 'skipped';
+  progress?: number;           // 0-100 for running
+  duration?: number;           // ms
+  dependsOn?: string[];        // Creates edges automatically
+
+  // Retry/error info
+  error?: string;              // Error message if failed
+  retryAttempt?: number;       // Current attempt (1, 2, 3...)
+  retryMax?: number;           // Max attempts (from step.retry.attempts)
+  optional?: boolean;          // Mark optional steps
+}
+
+/** Edge between nodes in a DAG */
+export interface DAGEdge {
+  from: string;
+  to: string;
+}
+
+/** DAG visualization organism for pipelines and workflows */
+export interface DAGViewOrganism extends BaseAtom {
+  organism: 'dag-view';
+  id: string;
+  nodes: DAGNode[] | (() => DAGNode[]);
+  edges?: DAGEdge[];           // Or calculated from dependsOn
+  layout?: 'horizontal' | 'vertical';
+  nodeSize?: 'sm' | 'md' | 'lg';
+  onNodeClick?: (node: DAGNode) => unknown;
+}
+
+// ============================================
 // THREE.JS ORGANISMS
 // ============================================
 
@@ -605,6 +643,8 @@ export type Organism =
   | ChatPanelOrganism
   // Slide Modal
   | SlideModalOrganism
+  // DAG View
+  | DAGViewOrganism
   // Video Editor Organisms
   | VideoTimelineOrganism
   | VideoPlayerOrganism

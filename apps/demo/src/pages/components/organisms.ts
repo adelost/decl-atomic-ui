@@ -153,6 +153,54 @@ export const organismShowcases: Section[] = [
     },
   },
 
+  // DAG View
+  {
+    molecule: 'showcase',
+    title: 'DAG View',
+    description: 'Directed Acyclic Graph for pipeline/workflow visualization',
+    layout: 'stacked',
+    component: {
+      molecule: 'stack',
+      gap: 'md',
+      items: [
+        // Controls
+        {
+          molecule: 'stack',
+          direction: 'horizontal',
+          gap: 'sm',
+          items: [
+            {
+              atom: 'button',
+              text: () => showcaseStore.dagSimulationRunning ? 'Running...' : 'Run Pipeline',
+              variant: 'primary',
+              icon: 'play',
+              disabled: () => showcaseStore.dagSimulationRunning,
+              onClick: () => showcaseStore.startDagSimulation(),
+            },
+            {
+              atom: 'text',
+              variant: 'muted',
+              text: () => showcaseStore.dagSelectedNode
+                ? `Selected: ${showcaseStore.dagSelectedNode}`
+                : 'Click a node to select',
+            },
+          ],
+        },
+        // DAG View
+        {
+          organism: 'dag-view',
+          id: 'demo-dag',
+          nodes: () => showcaseStore.dagNodes,
+          layout: 'horizontal',
+          nodeSize: 'md',
+          onNodeClick: (node: { id: string }) => {
+            showcaseStore.dagSelectedNode = node.id;
+          },
+        },
+      ],
+    },
+  },
+
   { atom: 'divider' },
   { atom: 'text', variant: 'heading', text: '💬 Chat & Celebration' },
 

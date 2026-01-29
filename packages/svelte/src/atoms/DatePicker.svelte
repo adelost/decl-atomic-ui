@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { DateAtom } from '@daui/core';
-  import { DatePicker, type DateValue } from 'bits-ui';
-  import { CalendarDate } from '@internationalized/date';
+  import { DatePicker } from 'bits-ui';
+  import { CalendarDate, type DateValue } from '@internationalized/date';
   import { untrack } from 'svelte';
   import Icon from './Icon.svelte';
 
@@ -66,7 +66,7 @@
   >
     <div class="date-input-wrapper">
       <DatePicker.Input {id} class="date-input" {placeholder}>
-        {#snippet children({ segments })}
+        {#snippet children({ segments }: { segments: Array<{ part: string; value: string }> })}
           {#each segments as segment (segment.part)}
             {#if segment.part === 'literal'}
               <span class="segment-literal">{segment.value}</span>
@@ -84,7 +84,7 @@
 
     <DatePicker.Content class="date-content" sideOffset={4}>
       <DatePicker.Calendar class="date-calendar">
-        {#snippet children({ months, weekdays })}
+        {#snippet children({ months, weekdays }: { months: Array<{ value: DateValue; weeks: Array<Array<{ day: number }>> }>; weekdays: string[] })}
           <DatePicker.Header class="calendar-header">
             <DatePicker.PrevButton class="calendar-nav-btn">
               <Icon name="chevron-left" size="sm" />

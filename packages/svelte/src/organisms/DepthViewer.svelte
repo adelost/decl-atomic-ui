@@ -6,7 +6,7 @@
 -->
 <script lang="ts">
   import type { DepthViewerOrganism } from '@daui/core';
-  import { onMount, onDestroy } from 'svelte';
+  import { onMount, onDestroy, untrack } from 'svelte';
   import * as THREE from 'three';
   import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   import Icon from '../atoms/Icon.svelte';
@@ -56,12 +56,12 @@
   let isFullscreen = $state(false);
   let viewMode = $state<'parallax' | 'inspect'>('parallax');
 
-  // Settings
-  let resolution = $state(initialResolution);
+  // Settings (use untrack to capture initial prop values)
+  let resolution = $state(untrack(() => initialResolution));
   let maxResolution = $state(1024);
-  let displacement = $state(initialDisplacement);
-  let autoRotate = $state(initialAutoRotate);
-  let showWireframe = $state(initialWireframe);
+  let displacement = $state(untrack(() => initialDisplacement));
+  let autoRotate = $state(untrack(() => initialAutoRotate));
+  let showWireframe = $state(untrack(() => initialWireframe));
 
   // Vertex shader - displaces Z based on depth
   const vertexShader = `

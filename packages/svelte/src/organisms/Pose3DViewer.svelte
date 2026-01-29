@@ -9,7 +9,7 @@
 -->
 <script lang="ts">
   import type { Pose3DViewerOrganism } from '@daui/core';
-  import { onMount, onDestroy } from 'svelte';
+  import { onMount, onDestroy, untrack } from 'svelte';
   import * as THREE from 'three';
   import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   import Icon from '../atoms/Icon.svelte';
@@ -80,7 +80,7 @@
 
   // View state
   let isFullscreen = $state(false);
-  let autoRotate = $state(initialAutoRotate);
+  let autoRotate = $state(untrack(() => initialAutoRotate));
 
   // Find pose at current time with interpolation
   let currentPose = $derived.by(() => {
