@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { MediaOverlayOrganism, MediaOverlayLayer } from '@daui/core';
-  import { onMount, onDestroy } from 'svelte';
+  import { onMount, onDestroy, untrack } from 'svelte';
   import Icon from '../atoms/Icon.svelte';
   import OverlayToggles from '../molecules/OverlayToggles.svelte';
   import { CanvasRenderer, type CanvasLayer, type HitResult } from '../canvas';
@@ -52,9 +52,11 @@
 
   // Initialize visibility when layers change
   $effect(() => {
+    const currentLayers = layers;
+    const prev = untrack(() => layerVisibility);
     const newVisibility: Record<string, boolean> = {};
-    layers.forEach((l) => {
-      newVisibility[l.id] = layerVisibility[l.id] ?? true;
+    currentLayers.forEach((l) => {
+      newVisibility[l.id] = prev[l.id] ?? true;
     });
     layerVisibility = newVisibility;
   });

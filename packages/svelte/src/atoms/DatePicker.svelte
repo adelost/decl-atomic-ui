@@ -67,7 +67,7 @@
     <div class="date-input-wrapper">
       <DatePicker.Input {id} class="date-input" {placeholder}>
         {#snippet children({ segments }: { segments: Array<{ part: string; value: string }> })}
-          {#each segments as segment (segment.part)}
+          {#each segments as segment}
             {#if segment.part === 'literal'}
               <span class="segment-literal">{segment.value}</span>
             {:else}
