@@ -312,9 +312,6 @@ export const moleculeShowcases: Section[] = [
     },
   },
 
-  { atom: 'divider' },
-  { atom: 'text', variant: 'heading', text: '🆕 New Molecules (shadcn/Bits UI)' },
-
   // Toggle Group
   {
     molecule: 'showcase',

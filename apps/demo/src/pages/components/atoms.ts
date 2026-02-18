@@ -54,6 +54,33 @@ export const atomShowcases: Section[] = [
     ],
   },
 
+  // Kbd
+  {
+    molecule: 'showcase',
+    title: 'Kbd',
+    description: 'Display keyboard shortcuts',
+    layout: 'side-by-side',
+    variants: [
+      { label: 'Single Key', component: { atom: 'kbd', keys: 'Esc' } },
+      { label: 'Combo String', component: { atom: 'kbd', keys: 'Ctrl+S' } },
+      { label: 'Array', component: { atom: 'kbd', keys: ['Cmd', 'Shift', 'P'] } },
+      { label: 'Small', component: { atom: 'kbd', keys: 'Enter', size: 'sm' } },
+    ],
+    children: [
+      {
+        molecule: 'stack',
+        direction: 'horizontal',
+        gap: 'lg',
+        align: 'center',
+        items: [
+          { molecule: 'stack', direction: 'horizontal', gap: 'sm', align: 'center', items: [{ atom: 'text', text: 'Save:' }, { atom: 'kbd', keys: 'Ctrl+S' }] },
+          { molecule: 'stack', direction: 'horizontal', gap: 'sm', align: 'center', items: [{ atom: 'text', text: 'Undo:' }, { atom: 'kbd', keys: 'Ctrl+Z' }] },
+          { molecule: 'stack', direction: 'horizontal', gap: 'sm', align: 'center', items: [{ atom: 'text', text: 'Paste:' }, { atom: 'kbd', keys: ['Cmd', 'V'] }] },
+        ],
+      },
+    ],
+  },
+
   // Spinner
   {
     molecule: 'showcase',
@@ -243,6 +270,70 @@ export const atomShowcases: Section[] = [
       id: 'terms',
       label: 'I agree to the terms and conditions',
     },
+  },
+
+  // Meter
+  {
+    molecule: 'showcase',
+    title: 'Meter',
+    description: 'Capacity/level indicator with semantic colors',
+    layout: 'side-by-side',
+    previewAlign: 'stretch',
+    variants: [
+      {
+        label: 'Default',
+        component: {
+          atom: 'meter',
+          value: () => showcaseStore.meterValue,
+          min: 0,
+          max: 100,
+          label: 'Storage Used',
+          showValue: true,
+        },
+      },
+      {
+        label: 'With Thresholds',
+        component: {
+          atom: 'meter',
+          value: () => 85,
+          min: 0,
+          max: 100,
+          low: 25,
+          high: 75,
+          optimum: 50,
+          label: 'CPU Usage',
+          showValue: true,
+        },
+      },
+      {
+        label: 'Low Optimal',
+        component: {
+          atom: 'meter',
+          value: () => 15,
+          min: 0,
+          max: 100,
+          low: 30,
+          high: 70,
+          optimum: 10,
+          label: 'Memory Pressure',
+          showValue: true,
+        },
+      },
+      {
+        label: 'High Optimal',
+        component: {
+          atom: 'meter',
+          value: () => 92,
+          min: 0,
+          max: 100,
+          low: 30,
+          high: 80,
+          optimum: 100,
+          label: 'Battery Level',
+          showValue: true,
+        },
+      },
+    ],
   },
 
   // Progress
@@ -499,337 +590,8 @@ export const atomShowcases: Section[] = [
     ],
   },
 
-  // DatePicker
-  {
-    molecule: 'showcase',
-    title: 'Date Picker',
-    description: 'Calendar date selection',
-    layout: 'side-by-side',
-    previewAlign: 'stretch',
-    variants: [
-      {
-        label: 'Default',
-        component: {
-          atom: 'date',
-          id: 'date-default',
-          label: 'Birth Date',
-          value: () => showcaseStore.selectedDate,
-          onChange: (v: Date | string | null) => (showcaseStore.selectedDate = v as Date | null),
-        },
-      },
-      {
-        label: 'With Range',
-        component: {
-          atom: 'date',
-          id: 'date-range',
-          label: 'Booking Date',
-          placeholder: 'Select date...',
-          minDate: new Date(),
-          maxDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 90 days from now
-        },
-      },
-      {
-        label: 'Required',
-        component: {
-          atom: 'date',
-          id: 'date-required',
-          label: 'Event Date',
-          required: true,
-        },
-      },
-      {
-        label: 'Disabled',
-        component: {
-          atom: 'date',
-          id: 'date-disabled',
-          label: 'Locked Date',
-          disabled: true,
-        },
-      },
-    ],
-  },
-
-  { atom: 'divider' },
-  { atom: 'text', variant: 'heading', text: '🆕 New Atoms (shadcn/Bits UI)' },
-
-  // PIN Input
-  {
-    molecule: 'showcase',
-    title: 'PIN Input',
-    description: 'OTP/PIN code input with individual digit fields',
-    layout: 'side-by-side',
-    variants: [
-      {
-        label: 'Default',
-        component: {
-          atom: 'pin-input',
-          id: 'pin-default',
-          length: 6,
-          value: () => showcaseStore.pinValue,
-          onChange: (v: string) => (showcaseStore.pinValue = v),
-          onComplete: (v: string) => alert(`PIN entered: ${v}`),
-        },
-      },
-      {
-        label: 'Numeric 4-digit',
-        component: {
-          atom: 'pin-input',
-          id: 'pin-4digit',
-          length: 4,
-          type: 'numeric',
-          placeholder: '•',
-        },
-      },
-      {
-        label: 'Masked',
-        component: {
-          atom: 'pin-input',
-          id: 'pin-masked',
-          length: 6,
-          mask: true,
-          type: 'numeric',
-        },
-      },
-      {
-        label: 'Disabled',
-        component: {
-          atom: 'pin-input',
-          id: 'pin-disabled',
-          length: 4,
-          disabled: true,
-        },
-      },
-    ],
-  },
-
-  // Toggle
-  {
-    molecule: 'showcase',
-    title: 'Toggle',
-    description: 'Pressable toggle button with on/off state',
-    layout: 'side-by-side',
-    variants: [
-      {
-        label: 'Default',
-        component: {
-          atom: 'toggle',
-          id: 'toggle-default',
-          value: () => showcaseStore.toggleValue,
-          onChange: (v: boolean) => (showcaseStore.toggleValue = v),
-          children: [{ atom: 'icon', name: 'bold', size: 'sm' }],
-        },
-      },
-      {
-        label: 'Outline',
-        component: {
-          atom: 'toggle',
-          id: 'toggle-outline',
-          variant: 'outline',
-          children: [{ atom: 'icon', name: 'italic', size: 'sm' }],
-        },
-      },
-      {
-        label: 'With Text',
-        component: {
-          atom: 'toggle',
-          id: 'toggle-text',
-          variant: 'outline',
-          children: [{ atom: 'text', text: 'Preview' }],
-        },
-      },
-      {
-        label: 'Small',
-        component: {
-          atom: 'toggle',
-          id: 'toggle-sm',
-          size: 'sm',
-          variant: 'outline',
-          children: [{ atom: 'icon', name: 'underline', size: 'sm' }],
-        },
-      },
-    ],
-  },
-
-  // Kbd
-  {
-    molecule: 'showcase',
-    title: 'Kbd',
-    description: 'Display keyboard shortcuts',
-    layout: 'side-by-side',
-    variants: [
-      { label: 'Single Key', component: { atom: 'kbd', keys: 'Esc' } },
-      { label: 'Combo String', component: { atom: 'kbd', keys: 'Ctrl+S' } },
-      { label: 'Array', component: { atom: 'kbd', keys: ['Cmd', 'Shift', 'P'] } },
-      { label: 'Small', component: { atom: 'kbd', keys: 'Enter', size: 'sm' } },
-    ],
-    children: [
-      {
-        molecule: 'stack',
-        direction: 'horizontal',
-        gap: 'lg',
-        align: 'center',
-        items: [
-          { molecule: 'stack', direction: 'horizontal', gap: 'sm', align: 'center', items: [{ atom: 'text', text: 'Save:' }, { atom: 'kbd', keys: 'Ctrl+S' }] },
-          { molecule: 'stack', direction: 'horizontal', gap: 'sm', align: 'center', items: [{ atom: 'text', text: 'Undo:' }, { atom: 'kbd', keys: 'Ctrl+Z' }] },
-          { molecule: 'stack', direction: 'horizontal', gap: 'sm', align: 'center', items: [{ atom: 'text', text: 'Paste:' }, { atom: 'kbd', keys: ['Cmd', 'V'] }] },
-        ],
-      },
-    ],
-  },
-
-  // Meter
-  {
-    molecule: 'showcase',
-    title: 'Meter',
-    description: 'Capacity/level indicator with semantic colors',
-    layout: 'side-by-side',
-    previewAlign: 'stretch',
-    variants: [
-      {
-        label: 'Default',
-        component: {
-          atom: 'meter',
-          value: () => showcaseStore.meterValue,
-          min: 0,
-          max: 100,
-          label: 'Storage Used',
-          showValue: true,
-        },
-      },
-      {
-        label: 'With Thresholds',
-        component: {
-          atom: 'meter',
-          value: () => 85,
-          min: 0,
-          max: 100,
-          low: 25,
-          high: 75,
-          optimum: 50,
-          label: 'CPU Usage',
-          showValue: true,
-        },
-      },
-      {
-        label: 'Low Optimal',
-        component: {
-          atom: 'meter',
-          value: () => 15,
-          min: 0,
-          max: 100,
-          low: 30,
-          high: 70,
-          optimum: 10,
-          label: 'Memory Pressure',
-          showValue: true,
-        },
-      },
-      {
-        label: 'High Optimal',
-        component: {
-          atom: 'meter',
-          value: () => 92,
-          min: 0,
-          max: 100,
-          low: 30,
-          high: 80,
-          optimum: 100,
-          label: 'Battery Level',
-          showValue: true,
-        },
-      },
-    ],
-  },
-
-  // Time Field
-  {
-    molecule: 'showcase',
-    title: 'Time Field',
-    description: 'Time input with native picker',
-    layout: 'side-by-side',
-    previewAlign: 'stretch',
-    variants: [
-      {
-        label: 'Default',
-        component: {
-          atom: 'time-field',
-          id: 'time-default',
-          label: 'Meeting Time',
-          value: () => showcaseStore.timeValue,
-          onChange: (v: string) => (showcaseStore.timeValue = v),
-        },
-      },
-      {
-        label: 'With Range',
-        component: {
-          atom: 'time-field',
-          id: 'time-range',
-          label: 'Office Hours',
-          min: '09:00',
-          max: '17:00',
-          step: 15,
-        },
-      },
-      {
-        label: 'Required',
-        component: {
-          atom: 'time-field',
-          id: 'time-required',
-          label: 'Appointment',
-          required: true,
-        },
-      },
-      {
-        label: 'Disabled',
-        component: {
-          atom: 'time-field',
-          id: 'time-disabled',
-          label: 'Locked Time',
-          disabled: true,
-        },
-      },
-    ],
-  },
-
-  // Date Range Field
-  {
-    molecule: 'showcase',
-    title: 'Date Range Field',
-    description: 'Two date inputs for selecting a range',
-    layout: 'side-by-side',
-    previewAlign: 'stretch',
-    variants: [
-      {
-        label: 'Default',
-        component: {
-          atom: 'date-range-field',
-          id: 'daterange-default',
-          label: 'Trip Dates',
-          value: () => showcaseStore.dateRangeValue,
-          onChange: (v: { start: Date | null; end: Date | null }) => (showcaseStore.dateRangeValue = v),
-        },
-      },
-      {
-        label: 'With Limits',
-        component: {
-          atom: 'date-range-field',
-          id: 'daterange-limits',
-          label: 'Booking Period',
-          minDate: new Date(),
-          maxDate: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000),
-        },
-      },
-      {
-        label: 'Required',
-        component: {
-          atom: 'date-range-field',
-          id: 'daterange-required',
-          label: 'Project Timeline',
-          required: true,
-        },
-      },
-    ],
-  },
+  // TODO: DatePicker, PIN Input, Time Field, Date Range Field disabled
+  // bits-ui crashes on Svelte 5 ($props.id() / segmentContents issue)
 
   { atom: 'divider' },
   { atom: 'text', variant: 'heading', text: '💬 Chat Atoms' },

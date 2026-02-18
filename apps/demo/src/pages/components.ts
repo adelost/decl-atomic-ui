@@ -1,4 +1,4 @@
-import type { Page } from 'svelte-daui';
+import type { Page, Section } from 'svelte-daui';
 import { showcaseStore } from '../stores/showcase.svelte';
 import {
   atomShowcases,
@@ -8,17 +8,34 @@ import {
   extensionShowcases,
 } from './components/index';
 
-/**
- * Components Catalog
- * Unified view with Preview + Code + Variants for each component
- *
- * Structure:
- * - stores/showcase.svelte.ts - Shared demo state
- * - pages/components/atoms.ts - Atom showcases (~350 lines)
- * - pages/components/molecules.ts - Molecule showcases (~280 lines)
- * - pages/components/organisms.ts - Organism showcases (~180 lines)
- * - pages/components/extensions.ts - Extension showcases (~180 lines)
- */
+// Search-aware visibility: showcase items filter by title/description,
+// non-showcase items (headers, dividers) hide when searching
+function withSearch(sections: Section[]): Section[] {
+  return sections.map((section) => {
+    if ('molecule' in section && section.molecule === 'showcase') {
+      const title = ('title' in section ? (section.title as string) : '') ?? '';
+      const desc = ('description' in section ? (section.description as string) : '') ?? '';
+      return {
+        ...section,
+        visible: () => {
+          const q = showcaseStore.componentSearch.toLowerCase().trim();
+          if (!q) return true;
+          return title.toLowerCase().includes(q) || desc.toLowerCase().includes(q);
+        },
+      };
+    }
+    return { ...section, visible: () => !showcaseStore.componentSearch.trim() };
+  }) as Section[];
+}
+
+const searchInput = {
+  atom: 'search-input' as const,
+  id: 'component-search',
+  placeholder: 'Filter components...',
+  value: () => showcaseStore.componentSearch,
+  onChange: (v: string) => { showcaseStore.componentSearch = v; },
+};
+
 export const componentsPage = {
   layout: 'full',
   title: '',
@@ -79,7 +96,7 @@ export const componentsPage = {
               direction: 'vertical',
               gap: 'lg',
               padding: 'md',
-              items: atomShowcases,
+              items: [searchInput, ...withSearch(atomShowcases)],
             },
           ],
         },
@@ -92,7 +109,7 @@ export const componentsPage = {
               direction: 'vertical',
               gap: 'lg',
               padding: 'md',
-              items: moleculeShowcases,
+              items: [searchInput, ...withSearch(moleculeShowcases)],
             },
           ],
         },
@@ -105,7 +122,7 @@ export const componentsPage = {
               direction: 'vertical',
               gap: 'lg',
               padding: 'md',
-              items: organismShowcases,
+              items: [searchInput, ...withSearch(organismShowcases)],
             },
           ],
         },
@@ -118,7 +135,7 @@ export const componentsPage = {
               direction: 'vertical',
               gap: 'lg',
               padding: 'md',
-              items: extensionShowcases,
+              items: [searchInput, ...withSearch(extensionShowcases)],
             },
           ],
         },

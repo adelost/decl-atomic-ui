@@ -63,6 +63,9 @@ export class ShowcaseStore {
   toolbarAlignment = $state('left');
   toolbarFormatting = $state<string[]>([]);
 
+  // Component search filter
+  componentSearch = $state('');
+
   // Secret code state
   secretUnlocked = $state(false);
 
