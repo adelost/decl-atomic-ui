@@ -11,10 +11,12 @@
     "lint": "pnpm -r lint",
     "format": "pnpm -r format",
     "publish-packages": "./scripts/publish.sh",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:e2e": "vitest run --config vitest.e2e.config.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
+    "@playwright/test": "^1.58.2",
     "@tsconfig/svelte": "^5.0.0",
     "bdd-vitest": "file:../bdd-vitest",
     "eslint": "^9.39.2",

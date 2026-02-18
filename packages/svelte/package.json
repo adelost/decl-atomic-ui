@@ -108,7 +108,7 @@
     "@daui/core": "workspace:*",
     "@internationalized/date": "^3.8.0",
     "@lucide/svelte": "^0.563.1",
-    "bits-ui": "^2.15.4",
+    "bits-ui": "^2.15.5",
     "d3-scale": "^4.0.2",
     "d3-shape": "^3.2.0",
     "dagre": "^0.8.5",
@@ -117,7 +117,6 @@
     "tailwind-variants": "^3.2.2"
   },
   "devDependencies": {
-    "@types/dagre": "^0.7.52",
     "@codemirror/autocomplete": "^6.20.0",
     "@codemirror/commands": "^6.10.1",
     "@codemirror/lang-javascript": "^6.2.4",
@@ -132,6 +131,7 @@
     "@codemirror/view": "^6.39.11",
     "@types/d3-scale": "^4.0.9",
     "@types/d3-shape": "^3.1.8",
+    "@types/dagre": "^0.7.52",
     "@types/matter-js": "^0.20.2",
     "@types/three": "^0.182.0",
     "matter-js": "^0.20.0",
