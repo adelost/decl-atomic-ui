@@ -37,9 +37,9 @@ declarative-atomic-ui/
 │   │
 │   └── svelte/                  ← svelte-daui (Svelte 5 implementation)
 │       └── src/
-│           ├── atoms/           ← Input, Button, Toast, ... (35)
-│           ├── molecules/       ← Form, Stack, Pagination, ... (24)
-│           ├── organisms/       ← Table, Modal, Sidebar, ... (11)
+│           ├── atoms/           ← Input, Button, Toast, ...
+│           ├── molecules/       ← Form, Stack, Pagination, ...
+│           ├── organisms/       ← Table, Modal, Sidebar, ...
 │           ├── engine/          ← $action, $async handlers, effect registry
 │           ├── effects/         ← ToastProvider, EffectOverlay
 │           ├── renderer/        ← PageRenderer, SectionRenderer
@@ -196,10 +196,10 @@ pages/
 ├── components.ts              ← Main file, assembles tabs
 └── components/
     ├── index.ts               ← Re-exports
-    ├── atoms.ts               ← ~400 lines
-    ├── molecules.ts           ← ~350 lines
-    ├── organisms.ts           ← ~250 lines
-    └── extensions.ts          ← ~220 lines
+    ├── atoms.ts
+    ├── molecules.ts
+    ├── organisms.ts
+    └── extensions.ts
 
 stores/
 └── showcase.svelte.ts         ← Shared demo state

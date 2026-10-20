@@ -35,4 +35,3 @@ See [AGENTS.md](../AGENTS.md) for full context.
 **Don't:**
 - Import .svelte in pages
 - Use magic strings for binding
-- Add unrequested features
